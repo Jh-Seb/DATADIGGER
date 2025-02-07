@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-URL = "https://es.wikipedia.org/wiki/Bogotazo"
+URL = "https://es.wikipedia.org/wiki/Cúcuta"
 class WIKISCRAPER:
     def __init__(self):
         self.URL = URL
