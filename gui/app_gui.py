@@ -1,6 +1,7 @@
 import tkinter
 import customtkinter
 from PIL import Image, ImageTk
+from scraper.static_scraper import WIKISCRAPER
 
 # Configuración de apariencia
 customtkinter.set_appearance_mode("dark")
@@ -21,8 +22,7 @@ class APPGUI(customtkinter.CTk):
         self.static_scraper = Static_Scraper(self)
         self.dynamic_scraper = Dynamic_Scraper(self)
 
-        # Callback para ejecutar el scraper; se asignará desde main.py
-        self.url_scraper_callback = None
+    
 
         # Mostrar Pantalla_Principal al inicio
         self.show_frame(self.pantalla_principal)
@@ -145,6 +145,13 @@ class Static_Scraper(customtkinter.CTkFrame):
         self.configure(fg_color="#111612")
         self.parent = parent
 
+        # Botón para regresar a Pantalla_Principal
+        self.house_button = customtkinter.CTkButton(
+            self, text="", image=homeicon, fg_color="#111612", width=60, height=60,
+            command=lambda: parent.show_frame(parent.pantalla_principal)
+        )
+        self.house_button.place(x=50, y=50, anchor="center")
+
         # Fondo
         self.bg_image = customtkinter.CTkLabel(self, text="", image=bgimage)
         self.bg_image.place(relx=0.7, rely=0.9, anchor="center", relwidth=1, relheight=1)
@@ -168,15 +175,49 @@ class Static_Scraper(customtkinter.CTkFrame):
         )
         self.url_entry.place(x=460, y=25, anchor="center")
 
-        # Botón de búsqueda (se asigna el método 'buscar_wiki')
+        # Botón de búsqueda 
         self.search_button = customtkinter.CTkButton(
-            self.url_frame, text="search", width=60, height=30, command=self.search_wiki
+            self.url_frame, text="search", width=60, height=30, command = self.sections_frame
         )
         self.search_button.place(x=950, y=25, anchor="center")
 
         # Label para mostrar mensajes de estado o error
         self.status_label = customtkinter.CTkLabel(self, text="", height=30, width=400)
         self.status_label.place(relx=0.5, y=95, anchor="center")
+    def sections_frame(self):
+        #Crear Sections Frame
+        self.sections_frame = customtkinter.CTkScrollableFrame(self,fg_color="light gray",width=300,height=400)
+        self.sections_frame.place(relx=0.5,y=420,anchor="center")
+        
+        self.continue_button = customtkinter.CTkButton(self.sections_frame,fg_color="light gray",text="Continue",width=60,height=40,command=self.wiki_frame)
+        self.continue_button.pack(pady=20)
+
+        
+        # Obtiene la URL ingresada en el entry
+        url = self.url_entry.get().strip()
+        if not url:
+            self.status_label.configure(text="Por favor, ingresa una URL.", text_color="red")
+            return
+
+        try:
+            # Instancia el scraper con la URL proporcionada
+            wiki = WIKISCRAPER(url)
+            
+            # Extrae el título
+            title = wiki.title_extractor()
+            
+            # Extrae las secciones disponibles
+            sections = wiki.general_content_extractor()
+            # En este ejemplo se toman todas las secciones para extraer párrafos.
+            # Si prefieres filtrar o seleccionar secciones específicas, se pueden agregar nuevos controles en la interfaz.
+            paragraphs = wiki.paragraphs_extractor(sections)
+        except Exception as e:
+            self.status_label.configure(text=f"Error: {e}", text_color="red")
+
+        for i in sections:
+            customtkinter.CTkSwitch(self.sections_frame, text=i, width=200, height=20).pack(pady=10)
+        
+    def wiki_frame(self):
 
         #Crear Frame del Wiki
 
@@ -195,18 +236,9 @@ class Static_Scraper(customtkinter.CTkFrame):
         )
         self.paragraphs_label.configure(wraplength=960)
         self.paragraphs_label.pack(pady =20)
-        # Botón para regresar a Pantalla_Principal
-        self.house_button = customtkinter.CTkButton(
-            self, text="", image=homeicon, fg_color="#111612", width=60, height=60,
-            command=lambda: parent.show_frame(parent.pantalla_principal)
-        )
-        self.house_button.place(x=50, y=50, anchor="center")
         
-    def search_wiki(self):
-        URL = self.url_entry.get()
-        if self.parent.url_scraper_callback:
-            self.parent.url_scraper_callback(URL)
-            self.status_label.configure(text=URL)
+        
+    
 
     
         
