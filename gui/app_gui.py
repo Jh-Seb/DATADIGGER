@@ -3,6 +3,7 @@ import customtkinter
 from PIL import Image, ImageTk
 from scraper.static_scraper import WIKISCRAPER
 
+
 # Configuración de apariencia
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("green")
@@ -177,19 +178,25 @@ class Static_Scraper(customtkinter.CTkFrame):
 
         # Botón de búsqueda 
         self.search_button = customtkinter.CTkButton(
-            self.url_frame, text="search", width=60, height=30, command = self.sections_frame
+            self.url_frame, text="search", width=60, height=30, command = self.show_sections_frame
         )
         self.search_button.place(x=950, y=25, anchor="center")
 
         # Label para mostrar mensajes de estado o error
         self.status_label = customtkinter.CTkLabel(self, text="", height=30, width=400)
         self.status_label.place(relx=0.5, y=95, anchor="center")
-    def sections_frame(self):
+    
+    
+         
+
+
+
+    def show_sections_frame(self):
         #Crear Sections Frame
         self.sections_frame = customtkinter.CTkScrollableFrame(self,fg_color="light gray",width=300,height=400)
         self.sections_frame.place(relx=0.5,y=420,anchor="center")
         
-        self.continue_button = customtkinter.CTkButton(self.sections_frame,fg_color="light gray",text="Continue",width=60,height=40,command=self.wiki_frame)
+        self.continue_button = customtkinter.CTkButton(self.sections_frame,fg_color="light gray",text="Continue",width=60,height=40,command=self.show_wiki_frame)
         self.continue_button.pack(pady=20)
 
         
@@ -199,25 +206,19 @@ class Static_Scraper(customtkinter.CTkFrame):
             self.status_label.configure(text="Por favor, ingresa una URL.", text_color="red")
             return
 
+        sections = []
         try:
-            # Instancia el scraper con la URL proporcionada
             wiki = WIKISCRAPER(url)
-            
-            # Extrae el título
             title = wiki.title_extractor()
-            
-            # Extrae las secciones disponibles
             sections = wiki.general_content_extractor()
-            # En este ejemplo se toman todas las secciones para extraer párrafos.
-            # Si prefieres filtrar o seleccionar secciones específicas, se pueden agregar nuevos controles en la interfaz.
             paragraphs = wiki.paragraphs_extractor(sections)
         except Exception as e:
             self.status_label.configure(text=f"Error: {e}", text_color="red")
-
+            return  # O finalizar el método aquí para que no se ejecute el resto
         for i in sections:
             customtkinter.CTkSwitch(self.sections_frame, text=i, width=200, height=20).pack(pady=10)
         
-    def wiki_frame(self):
+    def show_wiki_frame(self):
 
         #Crear Frame del Wiki
 

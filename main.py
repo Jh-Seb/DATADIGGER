@@ -1,5 +1,5 @@
 from gui.app_gui import APPGUI
-from scraper.static_scraper import WIKISCRAPER 
+
 
 
 

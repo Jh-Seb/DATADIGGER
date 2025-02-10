@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from gui.app_gui import Static_Scraper
-URL = Static_Scraper.url_entry.get()
+URL = "https://es.wikipedia.org/wiki/Bogotazo"
 class WIKISCRAPER:
     def __init__(self):
         self.URL = URL
