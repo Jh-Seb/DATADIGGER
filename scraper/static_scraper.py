@@ -21,17 +21,6 @@ class WIKISCRAPER:
         return sections
 
     def paragraphs_extractor(self, selected_sections=None):
-        """
-        Retorna un diccionario donde:
-        - La clave "Introducción" contiene únicamente los párrafos (<p>) que se encuentran antes del primer <h2>
-            dentro del contenedor:
-            <div id="bodyContent" class="vector-body ve-init-mw-desktopArticleTarget-targetContainer" ...>
-        - Después del primer <h2>, se extrae el resto del contenido de la forma habitual,
-            incluyendo <p>, <dl> y <ul> (con sus <li> precedidos por un guion).
-        
-        Si se pasa el parámetro selected_sections (lista de secciones), se filtra el resultado para
-        incluir solo aquellas secciones (además de la Introducción, si existe).
-        """
         paragraphs = {}
         default_section = "Introducción"
         paragraphs[default_section] = []
