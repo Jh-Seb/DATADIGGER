@@ -1,8 +1,5 @@
 from gui.app_gui import APPGUI
 
-
-
-
 def main():
     app = APPGUI()
     app.mainloop()

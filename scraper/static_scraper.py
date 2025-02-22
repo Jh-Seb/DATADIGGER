@@ -1,9 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
-URL = "https://es.wikipedia.org/wiki/Bogotazo"
+
 class WIKISCRAPER:
-    def __init__(self):
-        self.URL = URL
+    def __init__(self, url=None):
+        # Si no se proporciona URL se usa una por defecto
+        self.URL = url if url else "https://es.wikipedia.org/wiki/Bogotazo"
         self.page = requests.get(self.URL)
         if self.page.status_code == 200:
             self.soup = BeautifulSoup(self.page.text, 'html.parser')
@@ -20,22 +21,46 @@ class WIKISCRAPER:
         return sections
 
     def paragraphs_extractor(self, selected_sections):
-        paragraphs = []
+    #"""
+    #Retorna un diccionario donde cada llave es una sección y el valor es una lista 
+    #de párrafos y elementos de lista asociados a dicha sección.
+    #"""
+        paragraphs = {}
         current_section = None
-        for e in self.soup.find_all(['h2', 'p', 'dl']):
+        # Se incluye 'ul' para capturar listas
+        for e in self.soup.find_all(['h2', 'p', 'dl', 'ul']):
             if e.name == 'h2':
-                current_section = e.get_text()
+                current_section = e.get_text().strip()
             if current_section in selected_sections:
                 if e.name == 'p':
-                    paragraphs.append(e.get_text())
+                    if current_section not in paragraphs:
+                        paragraphs[current_section] = []
+                    paragraphs[current_section].append(e.get_text())
                 elif e.name == 'dl':
-                    quote = e.find('dd').find('i')
-                    if quote:
-                        paragraphs.append(quote.get_text())
+                    dd = e.find('dd')
+                    if dd:
+                        i_tag = dd.find('i')
+                        if i_tag:
+                            if current_section not in paragraphs:
+                                paragraphs[current_section] = []
+                            paragraphs[current_section].append(i_tag.get_text())
+                elif e.name == 'ul':
+                    # Iterar sobre cada <li> en el contenedor <ul>
+                    for li in e.find_all('li'):
+                        # Extraer el texto del <li> (incluye el contenido de <a> si lo hubiera)
+                        li_text = li.get_text().strip()
+                        # Preceder con guion para indicar que es un elemento de lista
+                        list_item = "- " + li_text
+                        if current_section not in paragraphs:
+                            paragraphs[current_section] = []
+                        paragraphs[current_section].append(list_item)
         return paragraphs
 
+
+
 if __name__ == "__main__":
-    wiki = WIKISCRAPER()
+    url = input("Introduce una URL de Wikipedia: ").strip()
+    wiki = WIKISCRAPER(url)
     title = wiki.title_extractor()
     print(f"Título: {title}")
 
@@ -48,7 +73,9 @@ if __name__ == "__main__":
     selected_sections = [sections[int(i)-1] for i in selected_indices.split(",")]
 
     paragraphs = wiki.paragraphs_extractor(selected_sections)
-    print("\nParrafos seleccionados:\n")
-    for para in paragraphs:
-        print(para)
-        print("\n---\n")
+    print("\nPárrafos seleccionados:\n")
+    for section, paras in paragraphs.items():
+        print(f"Sección: {section}")
+        for para in paras:
+            print(para)
+            print("\n---\n")
