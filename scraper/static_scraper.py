@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 
 class WIKISCRAPER:
     def __init__(self, url=None):
-        # Si no se proporciona URL se usa una por defecto
         self.URL = url if url else "https://es.wikipedia.org/wiki/Bogotazo"
         self.page = requests.get(self.URL)
         if self.page.status_code == 200:
