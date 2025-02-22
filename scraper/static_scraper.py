@@ -20,41 +20,75 @@ class WIKISCRAPER:
         sections = [section.get_text() for section in general_content]
         return sections
 
-    def paragraphs_extractor(self, selected_sections):
-    #"""
-    #Retorna un diccionario donde cada llave es una sección y el valor es una lista 
-    #de párrafos y elementos de lista asociados a dicha sección.
-    #"""
+    def paragraphs_extractor(self, selected_sections=None):
+        """
+        Retorna un diccionario donde:
+        - La clave "Introducción" contiene únicamente los párrafos (<p>) que se encuentran antes del primer <h2>
+            dentro del contenedor:
+            <div id="bodyContent" class="vector-body ve-init-mw-desktopArticleTarget-targetContainer" ...>
+        - Después del primer <h2>, se extrae el resto del contenido de la forma habitual,
+            incluyendo <p>, <dl> y <ul> (con sus <li> precedidos por un guion).
+        
+        Si se pasa el parámetro selected_sections (lista de secciones), se filtra el resultado para
+        incluir solo aquellas secciones (además de la Introducción, si existe).
+        """
         paragraphs = {}
+        default_section = "Introducción"
+        paragraphs[default_section] = []
+        
+        # Buscar el contenedor específico
+        content_div = self.soup.find('div', id="bodyContent")
+        if not content_div:
+            content_div = self.soup
+        
         current_section = None
-        # Se incluye 'ul' para capturar listas
-        for e in self.soup.find_all(['h2', 'p', 'dl', 'ul']):
+        found_first_h2 = False
+        
+        # Recorrer los elementos en orden dentro del contenedor
+        for e in content_div.find_all(['h2', 'p', 'dl', 'ul'], recursive=True):
             if e.name == 'h2':
+                found_first_h2 = True
                 current_section = e.get_text().strip()
-            if current_section in selected_sections:
-                if e.name == 'p':
-                    if current_section not in paragraphs:
-                        paragraphs[current_section] = []
-                    paragraphs[current_section].append(e.get_text())
-                elif e.name == 'dl':
-                    dd = e.find('dd')
-                    if dd:
-                        i_tag = dd.find('i')
-                        if i_tag:
-                            if current_section not in paragraphs:
-                                paragraphs[current_section] = []
-                            paragraphs[current_section].append(i_tag.get_text())
-                elif e.name == 'ul':
-                    # Iterar sobre cada <li> en el contenedor <ul>
-                    for li in e.find_all('li'):
-                        # Extraer el texto del <li> (incluye el contenido de <a> si lo hubiera)
-                        li_text = li.get_text().strip()
-                        # Preceder con guion para indicar que es un elemento de lista
-                        list_item = "- " + li_text
-                        if current_section not in paragraphs:
-                            paragraphs[current_section] = []
-                        paragraphs[current_section].append(list_item)
-        return paragraphs
+                if current_section not in paragraphs:
+                    paragraphs[current_section] = []
+            else:
+                if not found_first_h2:
+                    # Antes del primer <h2>, solo extraer <p>
+                    if e.name == 'p':
+                        paragraphs[default_section].append(e.get_text())
+                else:
+                    # Después del primer <h2>, extraer de forma habitual
+                    if e.name == 'p':
+                        if current_section is not None:
+                            paragraphs[current_section].append(e.get_text())
+                    elif e.name == 'dl':
+                        dd = e.find('dd')
+                        if dd:
+                            i_tag = dd.find('i')
+                            if i_tag and current_section is not None:
+                                paragraphs[current_section].append(i_tag.get_text())
+                    elif e.name == 'ul':
+                        if current_section is not None:
+                            for li in e.find_all('li'):
+                                li_text = li.get_text().strip()
+                                list_item = "- " + li_text
+                                paragraphs[current_section].append(list_item)
+        
+        # Si se especificaron secciones, filtrar el resultado
+        if selected_sections:
+            filtered = {}
+            if paragraphs.get(default_section):
+                filtered[default_section] = paragraphs[default_section]
+            for sec, content in paragraphs.items():
+                if sec in selected_sections:
+                    filtered[sec] = content
+            return filtered
+        else:
+            return paragraphs
+
+
+
+
 
 
 
