@@ -1,12 +1,44 @@
 import tkinter
 import customtkinter
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageSequence
 from scraper.static_scraper import WIKISCRAPER
 
 # Configuración de apariencia
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("green")
 customtkinter.deactivate_automatic_dpi_awareness()
+
+class DKDE(customtkinter.CTk):
+    def __init__(self):
+        super().__init__()
+
+        self.geometry("1200x700")
+        self.minsize(1200, 700)
+        self.title("DKDE")
+        self.configure(bg_color="#000000")
+
+        
+        self.gif_frame = customtkinter.CTkFrame(self, fg_color="#000000")
+        self.gif_frame.place(relx=0.5, rely=0.5, anchor="center", relwidth=1, relheight=1)
+
+        
+        self.gif_image = Image.open('assets/spin.gif')
+        self.frames = [ImageTk.PhotoImage(frame.copy()) for frame in ImageSequence.Iterator(self.gif_image)]
+        self.frame_count = len(self.frames)
+
+        
+        self.gif_label = tkinter.Label(self.gif_frame, bg="#000000")
+        self.gif_label.place(relx=0.5, rely=0.5, anchor="center")
+
+        
+        self.animate_gif()
+
+    def animate_gif(self):
+        def update_gif(index):
+            self.gif_label.config(image=self.frames[index])
+            next_index = (index + 1) % self.frame_count  # Cicla de forma indefinida
+            self.after(100, update_gif, next_index)  # Actualiza cada 100 ms
+        update_gif(0)
 
 class APPGUI(customtkinter.CTk):
     def __init__(self):
@@ -21,6 +53,8 @@ class APPGUI(customtkinter.CTk):
         self.pantalla_principal = Pantalla_Principal(self)
         self.static_scraper = Static_Scraper(self)
         self.dynamic_scraper = Dynamic_Scraper(self)
+        self.pantalla_informacion = Pantalla_Informacion(self)
+        self.pantalla_creadores = Pantalla_Creadores(self)
 
         # Mostrar Pantalla_Principal al inicio
         self.show_frame(self.pantalla_principal)
@@ -71,7 +105,8 @@ class Pantalla_Principal(customtkinter.CTkFrame):
             image=logo,
             width=50,
             height=50,
-            fg_color="#111612"
+            fg_color="#111612",
+            command = lambda: parent.show_frame(parent.pantalla_creadores)
         )
         self.logo_button.place(x=35, rely=0.5, anchor="center")
         
@@ -91,7 +126,8 @@ class Pantalla_Principal(customtkinter.CTkFrame):
             image=questionicon,
             width=60,
             height=60,
-            fg_color="#111612"
+            fg_color="#111612",
+            command=lambda: parent.show_frame(parent.pantalla_informacion)
         )
         self.question_button.pack(pady=10, padx=10)
         
@@ -136,6 +172,46 @@ class Pantalla_Principal(customtkinter.CTkFrame):
             border_color="#383838"
         )
         self.coming_button.place(relx=0.83, rely=0.5, anchor="center")
+
+
+class Pantalla_Creadores(customtkinter.CTkFrame):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.place(relx=0, rely=0, relwidth=1, relheight=1)
+        self.configure(fg_color="#111612")
+        self.parent = parent
+
+        # Botón para regresar a Pantalla_Principal
+        self.house_button = customtkinter.CTkButton(
+            self, text="", image=homeicon, fg_color="#111612", width=60, height=60,
+            command=lambda: parent.show_frame(parent.pantalla_principal)
+        )
+        self.house_button.place(x=50, y=50, anchor="center")
+
+        # Fondo
+        self.bg_image = customtkinter.CTkLabel(self, text="", image=bgimage)
+        self.bg_image.place(relx=0.7, rely=0.9, anchor="center", relwidth=1, relheight=1)
+
+        # Título de la pantalla
+        self.title_label = customtkinter.CTkLabel(
+            self, text="CREATORS", font=("Segoe UI Black", 40, "bold"), text_color="#32ff7e"
+        )
+        self.title_label.place(relx=0.5, y=40, anchor="center")
+
+        # Nombre de los creadores
+        self.creators_frame = customtkinter.CTkFrame(self, fg_color="light gray", height=500, width=400)
+        self.creators_frame.place(relx = 0.5, y = 330, anchor = "center")
+        self.creators_label = customtkinter.CTkLabel(
+            self.creators_frame, 
+            text=f"Jhon Sebastian Rodriguez Ramirez \n Sebastian Alejandro Alarcon Cespedes \n Yadieth Stefany Guevara Manrique",
+            justify="center",
+            font=("Arial", 20, "bold"),
+            text_color="black", width=360, height=460
+        )
+        self.creators_label.place(relx = 0.5,rely = 0.5, anchor = "center")
+
+class Pantalla_Informacion(customtkinter.CTkFrame):
+    pass
 
 class Static_Scraper(customtkinter.CTkFrame):
     def __init__(self, parent):
@@ -309,7 +385,7 @@ bgimage = customtkinter.CTkImage(light_image=Image.open(r'assets/bgimage.png'),d
 questionicon = customtkinter.CTkImage(light_image=Image.open(r'assets\Questionicon.png'),dark_image=Image.open(r'assets\Questionicon.png'),size=(60,60))
 configicon = customtkinter.CTkImage(light_image=Image.open(r'assets\configicon.png'),dark_image=Image.open(r'assets\configicon.png'),size=(60,60))
 homeicon = customtkinter.CTkImage(light_image=Image.open(r'assets\homeicon.png'),dark_image=Image.open(r'assets\homeicon.png'),size=(60,60))
-
+spin = customtkinter.CTkImage(light_image=Image.open(r'assets\spin.gif'),dark_image=Image.open(r'assets\spin.gif'))
 if __name__ == "__main__":
     app = APPGUI()
     app.mainloop()

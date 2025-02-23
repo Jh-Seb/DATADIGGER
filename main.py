@@ -1,7 +1,14 @@
+import os
+import sys
 from gui.app_gui import APPGUI
+from gui.app_gui import DKDE
 
 def main():
-    app = APPGUI()
+    if os.path.exists("important\data key\main key\data_key.jpeg"): 
+        app = APPGUI()
+    else:
+        app = DKDE()
+    
     app.mainloop()
 
 if __name__ == "__main__":

@@ -24,7 +24,6 @@ class WIKISCRAPER:
         default_section = "Introducción"
         paragraphs[default_section] = []
         
-        # Buscar el contenedor específico
         content_div = self.soup.find('div', id="bodyContent")
         if not content_div:
             content_div = self.soup
@@ -32,7 +31,6 @@ class WIKISCRAPER:
         current_section = None
         found_first_h2 = False
         
-        # Recorrer los elementos en orden dentro del contenedor
         for e in content_div.find_all(['h2', 'p', 'dl', 'ul'], recursive=True):
             if e.name == 'h2':
                 found_first_h2 = True
