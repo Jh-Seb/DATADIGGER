@@ -262,6 +262,7 @@ class Static_Scraper(customtkinter.CTkFrame):
         self.search_button.place(x=950, y=25, anchor="center")
 
     def start_scraping(self):
+        # Limpieza de frames existentes
         if hasattr(self, "sections_frame") and self.sections_frame is not None:
             self.sections_frame.place_forget()
             self.sections_frame.destroy()
@@ -270,8 +271,25 @@ class Static_Scraper(customtkinter.CTkFrame):
             self.wiki_frame.place_forget()
             self.wiki_frame.destroy()
             self.wiki_frame = None
+        if hasattr(self, "related_frame") and self.related_frame is not None:
+            self.related_frame.place_forget()
+            self.related_frame.destroy()
+            self.related_frame = None
+        if hasattr(self, "sections_label") and self.sections_label is not None:
+            self.sections_label.place_forget()
+            self.sections_label.destroy()
+            self.sections_label = None
+        if hasattr(self, "related_label") and self.related_label is not None:
+            self.related_label.place_forget()
+            self.related_label.destroy()
+            self.related_label = None
+
+        # Primero se realiza la búsqueda para definir self.scraper, self.title, self.sections y self.related_words
         self.search_url()
+        # Ahora que ya se tienen los datos, se muestran los frames correspondientes
+        self.show_related_frame()
         self.show_sections_frame()
+
 
 
 
@@ -286,17 +304,48 @@ class Static_Scraper(customtkinter.CTkFrame):
             self.scraper = WIKISCRAPER(self.url)
             self.title = self.scraper.title_extractor()
             self.sections = self.scraper.general_content_extractor()
+            self.related_words = self.scraper.related_words_extractor()
             self.status_label.configure(text="URL cargada correctamente", text_color="#32ff7e")
         except Exception as e:
             self.status_label.configure(text=f"Error: {e}", text_color="red")
     
+    def show_related_frame(self):
+        if hasattr(self, "related_frame") and self.related_frame is not None:
+            self.related_frame.destroy()
+            self.related_frame = None
+        elif hasattr(self, "related_label") and self.related_label is not None:
+            self.related_label.destroy()
+            self.related_label = None
+
+        self.related_label = customtkinter.CTkLabel(self,text = "Temas relacionados",font=("Segoe UI Black", 20, "bold"), text_color="#32ff7e")
+        self.related_label.place(relx=0.3333333333, y=230, anchor = "center")  
+        self.related_frame = customtkinter.CTkScrollableFrame(self, fg_color="#32ff7e", width=300, height=400)
+        self.related_frame.place(relx=0.3333333333, y=460, anchor="center")
+
+        # Iterar sobre los elementos del diccionario related_words
+        for i, j in self.related_words.items():
+            customtkinter.CTkButton(
+                self.related_frame,
+                text=i,
+                text_color="#111612",
+                width=200,
+                height=20,
+                command=lambda j=j: self.status_label.configure(text=j, text_color="red")
+            ).pack(pady=10)
+
     def show_sections_frame(self):
         if hasattr(self, "sections_frame") and self.sections_frame is not None:
             self.sections_frame.destroy()
             self.sections_frame = None
+        
+        elif hasattr(self, "sections_label") and self.sections_label is not None:
+            self.sections_label.destroy()
+            self.sections_label = None
 
+        self.sections_label = customtkinter.CTkLabel(self,text = "Secciones",font=("Segoe UI Black", 20, "bold"), text_color="#32ff7e")
+        self.sections_label.place(relx=0.6666666666, y=230, anchor = "center")
         self.sections_frame = customtkinter.CTkScrollableFrame(self, fg_color="#32ff7e", width=300, height=400)
-        self.sections_frame.place(relx=0.5, y=420, anchor="center")
+        self.sections_frame.place(relx=0.6666666666, y=460, anchor="center")
       
         self.section_vars = {}
         # Los switches se inician activados por defecto ("on")
@@ -313,6 +362,16 @@ class Static_Scraper(customtkinter.CTkFrame):
         self.continue_button.pack(pady=20)
 
     def show_wiki_frame(self):
+        # Destruir el frame y label de palabras relacionadas si existen
+        if hasattr(self, "related_frame") and self.related_frame is not None:
+            self.related_frame.place_forget()
+            self.related_frame.destroy()
+            self.related_frame = None
+        if hasattr(self, "related_label") and self.related_label is not None:
+            self.related_label.place_forget()
+            self.related_label.destroy()
+            self.related_label = None
+
         # Verificar que ya se haya realizado la búsqueda
         if not hasattr(self, "scraper"):
             self.status_label.configure(text="Por favor, ingresa una URL y presiona search.", text_color="red")
@@ -357,6 +416,7 @@ class Static_Scraper(customtkinter.CTkFrame):
         )
         self.paragraphs_label.configure(wraplength=960)
         self.paragraphs_label.pack(pady=20)
+
 
 
 class Dynamic_Scraper(customtkinter.CTkFrame):

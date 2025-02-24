@@ -16,7 +16,8 @@ class WIKISCRAPER:
 
     def general_content_extractor(self):
         general_content = self.soup.find_all('h2')
-        sections = [section.get_text() for section in general_content]
+        sections_r = [section.get_text() for section in general_content]
+        sections = ["Introducción"] + sections_r
         return sections
 
     def paragraphs_extractor(self, selected_sections=None):
@@ -59,6 +60,7 @@ class WIKISCRAPER:
                                 li_text = li.get_text().strip()
                                 list_item = "- " + li_text
                                 paragraphs[current_section].append(list_item)
+    
         
         # Si se especificaron secciones, filtrar el resultado
         if selected_sections:
@@ -71,9 +73,43 @@ class WIKISCRAPER:
             return filtered
         else:
             return paragraphs
+    
 
+    
+    def related_words_extractor(self):
+        RW = {}
+        content_div = self.soup.find('div', id="bodyContent")
+        if not content_div:
+            content_div = self.soup
 
+        paragraphs_before = []
+        paragraphs_after = []
+        found_first_h2 = False
 
+        # Recorrer elementos <h2> y <p> en orden
+        for element in content_div.find_all(['h2', 'p'], recursive=True):
+            if element.name == 'h2':
+                found_first_h2 = True
+            elif element.name == 'p':
+                if not found_first_h2:
+                    paragraphs_before.append(element)
+                else:
+                    paragraphs_after.append(element)
+
+        paragraphs_to_use = paragraphs_before + paragraphs_after
+
+        # Extraer enlaces de los párrafos seleccionados
+        for p in paragraphs_to_use:
+            for a in p.find_all('a'):
+                # Si el enlace contiene un <span>, se omite
+                if a.find('span'):
+                    continue
+                word = a.get_text().strip()
+                href = a.get('href')
+                if word and href:
+                    RW[word] = href
+
+        return RW
 
 
 
@@ -99,3 +135,10 @@ if __name__ == "__main__":
         for para in paras:
             print(para)
             print("\n---\n")
+
+
+    RW = wiki.related_words_extractor()
+    print("\nPalabras Relacionadas:\n")
+    for w, link in RW.items():
+        print(f"Palabra: {w}")
+        print(link)
