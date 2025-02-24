@@ -49,14 +49,15 @@ class APPGUI(customtkinter.CTk):
         self.title("DataDigger")
         self.configure(bg_color="#111612")
         
-        # Crear los tres Frames (pantallas)
+        # Pantallas
+       
         self.pantalla_principal = Pantalla_Principal(self)
         self.static_scraper = Static_Scraper(self)
         self.dynamic_scraper = Dynamic_Scraper(self)
         self.pantalla_informacion = Pantalla_Informacion(self)
         self.pantalla_creadores = Pantalla_Creadores(self)
 
-        # Mostrar Pantalla_Principal al inicio
+        
         self.show_frame(self.pantalla_principal)
 
     def show_frame(self, frame):
@@ -69,11 +70,11 @@ class Pantalla_Principal(customtkinter.CTkFrame):
         self.place(relx=0, rely=0, relwidth=1, relheight=1)
         self.configure(fg_color="#111612")
 
-        # Fondo
+        # Imagen de fondo
         self.bg_image = customtkinter.CTkLabel(self, text="", image=bgimage)
         self.bg_image.place(relx=0.7, rely=0.9, anchor="center", relwidth=1, relheight=1)
 
-        # Creación de los Frames secundarios
+        # Creacion de los Frames
         self.buttom_frame = customtkinter.CTkFrame(self, fg_color="#111612", height=200, width=700)
         self.buttom_frame.place(relx=0.5, y=220, anchor="center")
 
@@ -254,7 +255,7 @@ class Static_Scraper(customtkinter.CTkFrame):
         )
         self.url_entry.place(x=460, y=25, anchor="center")
         
-        # Botón de búsqueda: extrae la URL, instancia el scraper y muestra las secciones
+        # Botón de búsqueda
         self.search_button = customtkinter.CTkButton(
             self.url_frame, text="search", width=60, height=30,
             command=self.start_scraping
@@ -284,9 +285,9 @@ class Static_Scraper(customtkinter.CTkFrame):
             self.related_label.destroy()
             self.related_label = None
 
-        # Primero se realiza la búsqueda para definir self.scraper, self.title, self.sections y self.related_words
+        
         self.search_url()
-        # Ahora que ya se tienen los datos, se muestran los frames correspondientes
+        
         self.show_related_frame()
         self.show_sections_frame()
 
@@ -308,6 +309,8 @@ class Static_Scraper(customtkinter.CTkFrame):
             self.status_label.configure(text="URL cargada correctamente", text_color="#32ff7e")
         except Exception as e:
             self.status_label.configure(text=f"Error: {e}", text_color="red")
+
+    # Muestra los temas relacionados
     
     def show_related_frame(self):
         if hasattr(self, "related_frame") and self.related_frame is not None:
@@ -322,7 +325,7 @@ class Static_Scraper(customtkinter.CTkFrame):
         self.related_frame = customtkinter.CTkScrollableFrame(self, fg_color="#32ff7e", width=300, height=400)
         self.related_frame.place(relx=0.3333333333, y=460, anchor="center")
 
-        # Iterar sobre los elementos del diccionario related_words
+        
         for i, j in self.related_words.items():
             customtkinter.CTkButton(
                 self.related_frame,
@@ -332,6 +335,8 @@ class Static_Scraper(customtkinter.CTkFrame):
                 height=20,
                 command=lambda j=j: self.status_label.configure(text=j, text_color="red")
             ).pack(pady=10)
+
+    # Muestra las secciones
 
     def show_sections_frame(self):
         if hasattr(self, "sections_frame") and self.sections_frame is not None:
@@ -348,7 +353,7 @@ class Static_Scraper(customtkinter.CTkFrame):
         self.sections_frame.place(relx=0.6666666666, y=460, anchor="center")
       
         self.section_vars = {}
-        # Los switches se inician activados por defecto ("on")
+        
         for section in self.sections:
             var = customtkinter.StringVar(value="on")
             self.section_vars[section] = var
@@ -361,8 +366,10 @@ class Static_Scraper(customtkinter.CTkFrame):
                                                        command=self.show_wiki_frame)
         self.continue_button.pack(pady=20)
 
+    # Muestra una previsualización de la información
+
     def show_wiki_frame(self):
-        # Destruir el frame y label de palabras relacionadas si existen
+       
         if hasattr(self, "related_frame") and self.related_frame is not None:
             self.related_frame.place_forget()
             self.related_frame.destroy()
@@ -372,7 +379,7 @@ class Static_Scraper(customtkinter.CTkFrame):
             self.related_label.destroy()
             self.related_label = None
 
-        # Verificar que ya se haya realizado la búsqueda
+        
         if not hasattr(self, "scraper"):
             self.status_label.configure(text="Por favor, ingresa una URL y presiona search.", text_color="red")
             return
@@ -381,16 +388,16 @@ class Static_Scraper(customtkinter.CTkFrame):
         if not selected_sections:
             selected_sections = self.sections
 
-        # Asignar self.paragraphs usando el scraper
+       
         self.paragraphs = self.scraper.paragraphs_extractor(selected_sections)
         
-        # Destruir el sections_frame si existe
+        
         if hasattr(self, "sections_frame") and self.sections_frame is not None:
             self.sections_frame.place_forget()
             self.sections_frame.destroy()
             self.sections_frame = None
 
-        # Crear el wiki_frame nuevo
+        
         self.wiki_frame = customtkinter.CTkScrollableFrame(self, fg_color="light gray", width=1000, height=400)
         self.wiki_frame.place(relx=0.5, y=420, anchor="center")
 
@@ -401,7 +408,7 @@ class Static_Scraper(customtkinter.CTkFrame):
         )
         self.wiki_title_label.pack(pady=20)
         
-        # Construir el texto, mostrando el nombre de la sección como encabezado
+        
         paragraphs_text = ""
         for section, paras in self.paragraphs.items():
             paragraphs_text += f"{section}\n"

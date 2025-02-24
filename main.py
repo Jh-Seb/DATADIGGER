@@ -4,7 +4,7 @@ from gui.app_gui import APPGUI
 from gui.app_gui import DKDE
 
 def main():
-    if os.path.exists(r"important\data key\main key\data_key.jpeg"): 
+    if os.path.exists(r"coco.jpeg"): 
         app = APPGUI()
     else:
         app = DKDE()
