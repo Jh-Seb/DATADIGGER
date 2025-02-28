@@ -1,5 +1,6 @@
 import tkinter
 import customtkinter
+import shared_state
 from PIL import Image, ImageTk, ImageSequence
 from scraper.static_scraper import WIKISCRAPER
 
@@ -244,7 +245,7 @@ class Static_Scraper(customtkinter.CTkFrame):
 
         # Frame para ingresar la URL
         self.url_frame = customtkinter.CTkFrame(self, fg_color="#111612", height=50, width=990)
-        self.url_frame.place(relx=0.5, y=150, anchor="center")
+        self.url_frame.place(relx=0.5, y=155, anchor="center")
         
         # Entrada de la URL
         self.url_entry = customtkinter.CTkEntry(
@@ -276,7 +277,7 @@ class Static_Scraper(customtkinter.CTkFrame):
             self.related_frame.place_forget()
             self.related_frame.destroy()
             self.related_frame = None
-        if hasattr(self, "sections_label") and self.sections_label is not None:
+        if hasattr(self, "sections_label"):
             self.sections_label.place_forget()
             self.sections_label.destroy()
             self.sections_label = None
@@ -284,6 +285,9 @@ class Static_Scraper(customtkinter.CTkFrame):
             self.related_label.place_forget()
             self.related_label.destroy()
             self.related_label = None
+
+
+        
 
         
         self.search_url()
@@ -307,6 +311,9 @@ class Static_Scraper(customtkinter.CTkFrame):
             self.sections = self.scraper.general_content_extractor()
             self.related_words = self.scraper.related_words_extractor()
             self.status_label.configure(text="URL cargada correctamente", text_color="#32ff7e")
+
+
+            
         except Exception as e:
             self.status_label.configure(text=f"Error: {e}", text_color="red")
 
@@ -316,7 +323,7 @@ class Static_Scraper(customtkinter.CTkFrame):
         if hasattr(self, "related_frame") and self.related_frame is not None:
             self.related_frame.destroy()
             self.related_frame = None
-        elif hasattr(self, "related_label") and self.related_label is not None:
+        elif hasattr(self, "related_label"):
             self.related_label.destroy()
             self.related_label = None
 
@@ -343,7 +350,7 @@ class Static_Scraper(customtkinter.CTkFrame):
             self.sections_frame.destroy()
             self.sections_frame = None
         
-        elif hasattr(self, "sections_label") and self.sections_label is not None:
+        elif hasattr(self, "sections_label"):
             self.sections_label.destroy()
             self.sections_label = None
 
@@ -378,6 +385,14 @@ class Static_Scraper(customtkinter.CTkFrame):
             self.related_label.place_forget()
             self.related_label.destroy()
             self.related_label = None
+        if hasattr(self, "sections_label"):
+            self.sections_label.place_forget()
+            self.sections_label.destroy()
+            self.sections_label = None
+        if hasattr(self, "related_label") and self.related_label is not None:
+            self.related_label.place_forget()
+            self.related_label.destroy()
+            self.related_label = None
 
         
         if not hasattr(self, "scraper"):
@@ -399,7 +414,7 @@ class Static_Scraper(customtkinter.CTkFrame):
 
         
         self.wiki_frame = customtkinter.CTkScrollableFrame(self, fg_color="light gray", width=1000, height=400)
-        self.wiki_frame.place(relx=0.5, y=420, anchor="center")
+        self.wiki_frame.place(relx=0.5, y=450, anchor="center")
 
         self.wiki_title_label = customtkinter.CTkLabel(
             self.wiki_frame, text=self.title,
@@ -409,20 +424,30 @@ class Static_Scraper(customtkinter.CTkFrame):
         self.wiki_title_label.pack(pady=20)
         
         
-        paragraphs_text = ""
+        self.paragraphs_text = ""
         for section, paras in self.paragraphs.items():
-            paragraphs_text += f"{section}\n"
-            paragraphs_text += "\n".join(paras) + "\n\n"
+            self.paragraphs_text += f"{section}\n"
+            self.paragraphs_text += "\n".join(paras) + "\n\n"
             
         self.paragraphs_label = customtkinter.CTkLabel(
             self.wiki_frame,
-            text=paragraphs_text,
+            text=self.paragraphs_text,
             justify="left",
             font=("Arial", 20, "bold"),
             text_color="black", width=960
         )
         self.paragraphs_label.configure(wraplength=960)
         self.paragraphs_label.pack(pady=20)
+
+        self.report_gen_button = customtkinter.CTkButton(
+            self, text="Generate", width=60, height=30,
+            command=self.global_atributes
+        )
+        self.report_gen_button.place(relx = 0.5, y = 215, anchor = "center")
+    def global_atributes(self):
+        shared_state.titulo = self.title
+        shared_state.secciones = self.sections
+        shared_state.parrafos = self.paragraphs_text
 
 
 
