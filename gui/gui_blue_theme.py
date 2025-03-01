@@ -1,5 +1,6 @@
 import tkinter
 import customtkinter
+import webbrowser
 import shared_state
 import tkinter.messagebox as mbox
 from config_manager import load_config, update_config
@@ -388,7 +389,7 @@ class Static_Scraper(BaseScreen):
             self.clear_widget(widget)
 
         self.related_label = customtkinter.CTkLabel(
-            self, text="Temas relacionados",
+            self, text="Palabras relacionadas",
             font=("Segoe UI Black", 20, "bold"),
             text_color=COLOR_TITLE
         )
@@ -410,7 +411,7 @@ class Static_Scraper(BaseScreen):
                 fg_color=COLOR_BUTTON,
                 hover_color=COLOR_HOVER,
                 border_color=COLOR_BORDER,
-                command=lambda val=value: self.status_label.configure(text=val, text_color=COLOR_ERROR_TEXT)
+                command=lambda wiki = "https://es.wikipedia.org/",val=value: webbrowser.open(wiki+val)
             ).pack(pady=10)
 
     def show_sections_frame(self):
