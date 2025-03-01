@@ -49,6 +49,10 @@ homeicon = customtkinter.CTkImage(
     dark_image=Image.open(r'assets\red_theme\homeicon.png'),
     size=(60, 60)
 )
+dogs = customtkinter.CTkImage(
+    light_image=Image.open(r'assets/dogs.gif'),
+    dark_image=Image.open(r'assets/dogs.gif')
+)
 
 
 # Clase base para pantallas comunes
@@ -266,9 +270,9 @@ class Pantalla_Creadores(BaseScreen):
         self.title_label.place(relx=0.5, y=40, anchor="center")
 
         self.creators_frame = customtkinter.CTkFrame(
-            self, fg_color=COLOR_FRAME, height=500, width=400
+            self, fg_color=COLOR_FRAME, height=300, width=400
         )
-        self.creators_frame.place(relx=0.5, y=330, anchor="center")
+        self.creators_frame.place(relx=0.5, rely=0.3, anchor="center")
 
         self.creators_label = customtkinter.CTkLabel(
             self.creators_frame,
@@ -281,6 +285,27 @@ class Pantalla_Creadores(BaseScreen):
             width=360, height=460
         )
         self.creators_label.place(relx=0.5, rely=0.5, anchor="center")
+
+        self.gif_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG,width=272, height=168)
+        self.gif_frame.place(x = 156, rely=0.9, anchor="center")
+
+        
+        self.gif_image = Image.open('assets/dogs.gif')
+        self.frames = [ImageTk.PhotoImage(frame.copy().resize((272,168),Image.LANCZOS)) for frame in ImageSequence.Iterator(self.gif_image)]
+        self.frame_count = len(self.frames)
+
+        
+        self.gif_label = tkinter.Label(self.gif_frame, bg=COLOR_BG)
+        self.gif_label.place(relx=0.5, rely=0.5, anchor="center", relheight=1, relwidth=1)
+
+        self.animate_gif()
+
+    def animate_gif(self):
+        def update_gif(index):
+            self.gif_label.config(image=self.frames[index])
+            next_index = (index + 1) % self.frame_count  # Cicla de forma indefinida
+            self.after(100, update_gif, next_index)  # Actualiza cada 100 ms
+        update_gif(0)
 
 # Pantalla de información (estructura base, a implementar)
 class Pantalla_Informacion(BaseScreen):
