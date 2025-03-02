@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import shared_state
 
 class WIKISCRAPER:
     def __init__(self, url=None):
