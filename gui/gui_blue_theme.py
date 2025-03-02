@@ -1,8 +1,10 @@
 import tkinter
+import os
 import customtkinter
 import webbrowser
 import shared_state
 import tkinter.messagebox as mbox
+from tkinter import filedialog
 from config_manager import load_config, update_config
 from PIL import Image, ImageTk, ImageSequence
 from scraper.static_scraper import WIKISCRAPER
@@ -50,6 +52,11 @@ homeicon = customtkinter.CTkImage(
     dark_image=Image.open(r'assets\blue_theme\homeicon.png'),
     size=(60, 60)
 )
+returnicon = customtkinter.CTkImage(
+    light_image=Image.open(r'assets\blue_theme\returnimage.png'),
+    dark_image=Image.open(r'assets\blue_theme\returnimage.png'),
+    size = (60,60)
+)
 dogs = customtkinter.CTkImage(
     light_image=Image.open(r'assets/dogs.gif'),
     dark_image=Image.open(r'assets/dogs.gif')
@@ -86,9 +93,11 @@ class APPGUIBLUE(customtkinter.CTk):
         self.pantalla_principal = Pantalla_Principal(self)
         self.static_scraper = Static_Scraper(self)
         self.dynamic_scraper = Dynamic_Scraper(self)
-        self.pantalla_informacion = Pantalla_Informacion(self)
+        self.pantalla_informacion_static = Pantalla_Informacion_Static(self)
+        self.pantalla_informacion_dynamic = Pantalla_Informacion_Dynamic(self)
         self.pantalla_creadores = Pantalla_Creadores(self)
         self.pantalla_configuracion = Pantalla_Configuracion(self)
+        self.reports = Reports(self)
         
         self.show_frame(self.pantalla_principal)
 
@@ -101,8 +110,11 @@ class Pantalla_Principal(BaseScreen):
     def __init__(self, parent):
         super().__init__(parent)
         # Frames internos
-        self.buttom_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=200, width=700)
-        self.buttom_frame.place(relx=0.5, y=220, anchor="center")
+        self.buttom_frame_1 = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=200, width=700)
+        self.buttom_frame_1.place(relx=0.5, y=220, anchor="center")
+
+        self.buttom_frame_2 = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=200, width=240)
+        self.buttom_frame_2.place(relx=0.5, y=430, anchor="center")
 
         self.info_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=60, width=60)
         self.info_frame.place(x=50, rely=1, anchor="s")
@@ -147,17 +159,11 @@ class Pantalla_Principal(BaseScreen):
         )
         self.config_button.pack(pady=10, padx=10)
 
-        self.question_button = customtkinter.CTkButton(
-            self.config_frame, text="", image=questionicon,
-            width=60, height=60, fg_color=COLOR_BG,
-            hover_color=COLOR_HOVER,
-            command=lambda: parent.show_frame(parent.pantalla_informacion)
-        )
-        self.question_button.pack(pady=10, padx=10)
+        
         
         # Botones para acceder a los scrapers
         self.static_button = customtkinter.CTkButton(
-            self.buttom_frame, text="WIKI",
+            self.buttom_frame_1, text="WIKI",
             font=("Tw Cen MT Condensed Extra Bold", 40, "bold"),
             width=220, height=180, fg_color=COLOR_BUTTON,
             hover_color=COLOR_HOVER, border_width=5, border_color=COLOR_BORDER,
@@ -166,7 +172,7 @@ class Pantalla_Principal(BaseScreen):
         self.static_button.place(relx=0.17, rely=0.5, anchor="center")
 
         self.dynamic_button = customtkinter.CTkButton(
-            self.buttom_frame, text="REAL STATE",
+            self.buttom_frame_1, text="REAL STATE",
             font=("Tw Cen MT Condensed Extra Bold", 40, "bold"),
             width=220, height=180, fg_color=COLOR_BUTTON,
             hover_color=COLOR_HOVER, border_width=5, border_color=COLOR_BORDER,
@@ -174,15 +180,25 @@ class Pantalla_Principal(BaseScreen):
         )
         self.dynamic_button.place(relx=0.5, rely=0.5, anchor="center")
 
+        self.reports_button = customtkinter.CTkButton(
+            self.buttom_frame_1, text="REPORTS",
+            font=("Tw Cen MT Condensed Extra Bold", 40, "bold"),
+            width=220, height=180, fg_color=COLOR_BUTTON,
+            border_width=5, border_color=COLOR_BORDER,
+            hover_color=COLOR_HOVER,
+            command=lambda: parent.show_frame(parent.reports)
+        )
+        self.reports_button.place(relx=0.83, rely=0.5, anchor="center")
+
         self.coming_button = customtkinter.CTkButton(
-            self.buttom_frame, text="SOON...",
+            self.buttom_frame_2, text="SOON...",
             text_color=COLOR_TEXT,
             font=("Tw Cen MT Condensed Extra Bold", 40, "bold"),
             width=220, height=180, fg_color=COLOR_BUTTON,
             border_width=5, border_color=COLOR_BORDER,
             hover_color="#227f7f"
         )
-        self.coming_button.place(relx=0.83, rely=0.5, anchor="center")
+        self.coming_button.place(relx=0.5, rely=0.5, anchor="center")
 
 class Pantalla_Configuracion(BaseScreen):
     def __init__(self, parent):
@@ -205,11 +221,12 @@ class Pantalla_Configuracion(BaseScreen):
         self.config_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=400, width=400)
         self.config_frame.place(relx=0.5, y=260, anchor="center")
         
+        
         themes = ["Green", "Blue", "Red"]
         self.theme_picker = customtkinter.CTkComboBox(self.config_frame, values=themes, height=40, width=100)
         self.theme_picker.place(x=90, y=60, anchor="center")
         
-        # Cargar el tema actual y asignarlo al combo box
+        
         config = load_config()
         current_theme = config.get("theme", "blue").capitalize()
         self.theme_picker.set(current_theme)
@@ -220,31 +237,54 @@ class Pantalla_Configuracion(BaseScreen):
         )
         self.theme_button.place(x=190, y=60, anchor="center")
 
+        
+        default_directory = config.get("directory", os.path.join(os.path.expanduser("~"), "Downloads", "reports"))
         self.directory_entry = customtkinter.CTkEntry(
             self.config_frame,
-            placeholder_text="C:/Download/reports",
+            placeholder_text=default_directory,
             width=320,
             height=40,
             fg_color=COLOR_FRAME,
             border_color=COLOR_BORDER,
             text_color=COLOR_TEXT
         )
-        self.directory_entry.place(x = 200, y = 140, anchor = "center")
+        self.directory_entry.place(x=200, y=140, anchor="center")
 
         self.directory_button = customtkinter.CTkButton(
             self.config_frame,
-            text = "Select Directory",
-            fg_color = COLOR_BUTTON,
-            hover_color= COLOR_HOVER,
-            width = 140,
-            height= 40,
-            command= self.change_directory
+            text="Select Directory",
+            fg_color=COLOR_BUTTON,
+            hover_color=COLOR_HOVER,
+            width=140,
+            height=40,
+            command=self.change_directory
         )
-        self.directory_button.place(relx = 0.5, y = 200, anchor = "center")
+        self.directory_button.place(relx=0.5, y=200, anchor="center")
+        
+        
+        self.directory = default_directory
 
     def change_directory(self):
-        pass
-    
+        
+        path_text = self.directory_entry.get().strip()
+        if path_text:
+            if os.path.isdir(path_text):
+                self.directory = path_text
+                update_config(directory=self.directory)
+                self.directory_entry.configure(placeholder_text=self.directory)
+                mbox.showinfo("Actualizado", "Directorio actualizado correctamente.")
+            else:
+                mbox.showerror("Error", "INGRESE UNA RUTA VALIDA")
+        else:
+            default_dir = self.directory_entry.cget("placeholder_text")
+            selected_dir = filedialog.askdirectory(initialdir=default_dir, 
+                                                   title="Seleccione la carpeta de destino para los reports")
+            if selected_dir:
+                self.directory = selected_dir
+                update_config(directory=self.directory)
+                self.directory_entry.configure(placeholder_text=self.directory)
+                mbox.showinfo("Actualizado", "Directorio actualizado correctamente.")
+
     def change_theme(self):
         new_theme = self.theme_picker.get().lower()
         update_config(theme=new_theme)
@@ -310,25 +350,48 @@ class Pantalla_Creadores(BaseScreen):
             self.after(100, update_gif, next_index)  # Actualiza cada 100 ms
         update_gif(0)
 
-# Pantalla de información (estructura base, a implementar)
-class Pantalla_Informacion(BaseScreen):
+
+class Pantalla_Informacion_Static(BaseScreen):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.house_button = customtkinter.CTkButton(
-            self, text="", image=homeicon, fg_color=COLOR_BG,
+        self.return_button_static = customtkinter.CTkButton(
+            self, text="", image=returnicon, fg_color=COLOR_BG,
             hover_color=COLOR_HOVER,
             width=60, height=60,
-            command=lambda: parent.show_frame(parent.pantalla_principal)
+            command=lambda: parent.show_frame(parent.static_scraper)
         )
-        self.house_button.place(x=50, y=50, anchor="center")
+        self.return_button_static.place(x=50, y=50, anchor="center")
 
         self.info_label = customtkinter.CTkLabel(
-            self, text="Información",
-            font=("Segoe UI", 30, "bold"),
+            self, text="HOW TO USE?",
+            font=("Segoe UI Black", 40, "bold"),
             text_color=COLOR_TITLE
         )
         self.info_label.place(relx=0.5, y=60, anchor="center")
+
+class Pantalla_Informacion_Dynamic(BaseScreen):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.return_button_dynamic = customtkinter.CTkButton(
+            self, text="", image=returnicon, fg_color=COLOR_BG,
+            hover_color=COLOR_HOVER,
+            width=60, height=60,
+            command=lambda: parent.show_frame(parent.dynamic_scraper)
+        )
+        self.return_button_dynamic.place(x=50, y=50, anchor="center")
+
+        self.info_label = customtkinter.CTkLabel(
+            self, text="HOW TO USE",
+            font=("Segoe UI Black", 40, "bold"),
+            text_color=COLOR_TITLE
+        )
+        self.info_label.place(relx=0.5, y=60, anchor="center")
+
+
+
+        
 
 # Scraper estático (WIKI)
 class Static_Scraper(BaseScreen):
@@ -344,6 +407,9 @@ class Static_Scraper(BaseScreen):
         )
         self.house_button.place(x=50, y=50, anchor="center")
 
+        self.config_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=190, width=100)
+        self.config_frame.place(relx=0.98, y=20, anchor="ne")
+
         self.title_label = customtkinter.CTkLabel(
             self, text="WIKI",
             font=("Segoe UI Black", 40, "bold"),
@@ -357,6 +423,14 @@ class Static_Scraper(BaseScreen):
             text_color=COLOR_TEXT
         )
         self.status_label.place(relx=0.5, y=95, anchor="center")
+
+        self.question_button = customtkinter.CTkButton(
+            self.config_frame, text="", image=questionicon,
+            width=60, height=60, fg_color=COLOR_BG,
+            hover_color=COLOR_HOVER,
+            command=lambda: parent.show_frame(parent.pantalla_informacion_static)
+        )
+        self.question_button.pack(pady=10, padx=10)
 
         self.url_frame = customtkinter.CTkFrame(
             self, fg_color=COLOR_BG,
@@ -427,6 +501,8 @@ class Static_Scraper(BaseScreen):
         self.related_frame.place(relx=0.3333, y=460, anchor="center")
 
         for key, value in self.related_words.items():
+            def open_wiki(v=value):
+                webbrowser.open("https://es.wikipedia.org/" + v)
             customtkinter.CTkButton(
                 self.related_frame,
                 text=key,
@@ -436,12 +512,9 @@ class Static_Scraper(BaseScreen):
                 fg_color=COLOR_BUTTON,
                 hover_color=COLOR_HOVER,
                 border_color=COLOR_BORDER,
-                command=lambda wiki = "https://es.wikipedia.org/",val=value: webbrowser.open(wiki+val)
+                command=open_wiki
             ).pack(pady=10)
 
-    def show_sections_frame(self):
-        for widget in ["sections_frame", "sections_label"]:
-            self.clear_widget(widget)
 
         self.sections_label = customtkinter.CTkLabel(
             self, text="Secciones",
@@ -567,6 +640,37 @@ class Dynamic_Scraper(BaseScreen):
             text_color=COLOR_TITLE
         )
         self.title_label.place(relx=0.5, y=40, anchor="center")
+
+        self.config_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=190, width=100)
+        self.config_frame.place(relx=0.98, y=20, anchor="ne")
+
+        self.question_button = customtkinter.CTkButton(
+            self.config_frame, text="", image=questionicon,
+            width=60, height=60, fg_color=COLOR_BG,
+            hover_color=COLOR_HOVER,
+            command=lambda: parent.show_frame(parent.pantalla_informacion_dynamic)
+        )
+        self.question_button.pack(pady=10, padx=10)
+
+
+class Reports(BaseScreen):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.house_button = customtkinter.CTkButton(
+            self, text="", image=homeicon, fg_color=COLOR_BG,
+            hover_color=COLOR_HOVER,
+            width=60, height=60,
+            command=lambda: parent.show_frame(parent.pantalla_principal)
+        )
+        self.house_button.place(x=50, y=50, anchor="center")
+
+        self.title_label = customtkinter.CTkLabel(
+            self, text="REPORTS",
+            font=("Segoe UI Black", 40, "bold"),
+            text_color=COLOR_TITLE
+        )
+        self.title_label.place(relx=0.5, y=40, anchor="center")
+
 
 
 if __name__ == "__main__":
