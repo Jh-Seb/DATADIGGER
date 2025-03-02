@@ -118,6 +118,7 @@ if __name__ == "__main__":
     url = input("Introduce una URL de Wikipedia: ").strip()
     wiki = WIKISCRAPER(url)
     title = wiki.title_extractor()
+    shared_state.set_titulo(title)
     print(f"Título: {title}")
 
     sections = wiki.general_content_extractor()
@@ -129,6 +130,7 @@ if __name__ == "__main__":
     selected_sections = [sections[int(i)-1] for i in selected_indices.split(",")]
 
     paragraphs = wiki.paragraphs_extractor(selected_sections)
+    shared_state.set_parrafos(paragraphs)
     print("\nPárrafos seleccionados:\n")
     for section, paras in paragraphs.items():
         print(f"Sección: {section}")
