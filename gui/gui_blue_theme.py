@@ -8,6 +8,7 @@ from tkinter import filedialog
 from config_manager import load_config, update_config
 from PIL import Image, ImageTk, ImageSequence
 from scraper.static_scraper import WIKISCRAPER
+from reports.static_report import Generator_report
 
 # Configuración de apariencia
 customtkinter.set_appearance_mode("dark")
@@ -618,9 +619,7 @@ class Static_Scraper(BaseScreen):
         self.report_gen_button.place(relx=0.5, y=215, anchor="center")
 
     def global_atributes(self):
-        shared_state.titulo = self.title
-        shared_state.secciones = self.sections
-        shared_state.parrafos = self.paragraphs_label.cget("text")
+        Generator_report.generar()
 
 # Scraper dinámico
 class Dynamic_Scraper(BaseScreen):
