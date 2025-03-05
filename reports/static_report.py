@@ -1,8 +1,10 @@
+import os
+import re
 import shared_state
 from fpdf import FPDF  
 from pathlib import Path
-import os
-import re
+from config_manager import load_config
+
 
 # Función para limpiar el texto y evitar caracteres no compatibles 
 def limpiar_texto(texto):
@@ -46,12 +48,12 @@ class Generator_report(ReportPDF):
                 titulo = shared_state.get_titulo()
                 self.nickname(titulo)
                 parrafos = shared_state.get_parrafos()
-                palabras = shared_state.get_palabras_relacionadas()
                 for seccion, parrafos in parrafos.items():
                         self.indice(seccion, parrafos)
                 filename = f'{titulo}.pdf'
-                download_folder = str(Path.home() / "Downloads")
-                file_path = os.path.join(download_folder, filename)
+                config = load_config()
+                directory = config.get("reports_directory", "C:\\Users\\JHON\\Downloads\\reports").lower()
+                file_path = os.path.join(directory, filename)
                 self.output(file_path)
                 os.startfile(file_path)
                 print('Reporte generado exitosamente')
