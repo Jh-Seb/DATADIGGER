@@ -619,7 +619,9 @@ class Static_Scraper(BaseScreen):
         self.report_gen_button.place(relx=0.5, y=215, anchor="center")
 
     def global_atributes(self):
-        Generator_report.generar()
+        shared_state.set_titulo(self.title)
+        shared_state.secciones = self.sections
+        shared_state.set_parrafos(self.paragraphs_label.cget("text"))
 
 # Scraper dinámico
 class Dynamic_Scraper(BaseScreen):

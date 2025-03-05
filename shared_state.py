@@ -2,6 +2,10 @@
 import json
 import os
 
+titulo = None
+parrafos = None
+secciones = None
+
 archive = "extracto_wikipedia.json"
 
 def cargar():
