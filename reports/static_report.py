@@ -48,8 +48,10 @@ class Generator_report(ReportPDF):
                 titulo = shared_state.get_titulo()
                 self.nickname(titulo)
                 parrafos = shared_state.get_parrafos()
+                palabras = shared_state.get_palabras_relacionadas()
                 for seccion, parrafos in parrafos.items():
                         self.indice(seccion, parrafos)
+                  
                 filename = f'{titulo}.pdf'
                 config = load_config()
                 directory = config.get("reports_directory", "C:\\Users\\JHON\\Downloads\\reports").lower()
