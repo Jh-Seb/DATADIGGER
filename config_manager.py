@@ -19,7 +19,7 @@ def update_config(theme=None, reports_directory=None):
     if theme is not None:
         config["theme"] = theme
     if reports_directory is not None:
-        config["directory"] = reports_directory
+        config["reports_directory"] = reports_directory
     with open(CONFIG_FILE, "w") as f:
         json.dump(config, f, indent=4)
     return config

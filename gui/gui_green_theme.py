@@ -514,6 +514,7 @@ class Static_Scraper(BaseScreen):
                 command=open_wiki
             ).pack(pady=10)
 
+    def show_sections_frame(self):
         self.sections_label = customtkinter.CTkLabel(
             self, text="Secciones",
             font=("Segoe UI Black", 20, "bold"),
@@ -615,10 +616,13 @@ class Static_Scraper(BaseScreen):
         )
         self.report_gen_button.place(relx=0.5, y=215, anchor="center")
 
+    
+
     def global_atributes(self):
         shared_state.set_titulo(self.title)
-        shared_state.secciones = self.sections
-        shared_state.set_parrafos(self.paragraphs_label.cget("text"))
+        shared_state.set_parrafos(self.paragraphs)
+        from reports.static_report import Generator_report
+        Generator_report().generar()
 
 # Scraper dinámico
 class Dynamic_Scraper(BaseScreen):
