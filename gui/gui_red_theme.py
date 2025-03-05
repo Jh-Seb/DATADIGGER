@@ -96,8 +96,6 @@ class APPGUIRED(customtkinter.CTk):
         self.pantalla_principal = Pantalla_Principal(self)
         self.static_scraper = Static_Scraper(self)
         self.dynamic_scraper = Dynamic_Scraper(self)
-        self.pantalla_informacion_static = Pantalla_Informacion_Static(self)
-        self.pantalla_informacion_dynamic = Pantalla_Informacion_Dynamic(self)
         self.pantalla_creadores = Pantalla_Creadores(self)
         self.pantalla_configuracion = Pantalla_Configuracion(self)
         self.reports = Reports(self)
@@ -361,45 +359,6 @@ class Pantalla_Creadores(BaseScreen):
             self.after(100, update_gif, next_index)  # Actualiza cada 100 ms
         update_gif(0)
 
-class Pantalla_Informacion_Static(BaseScreen):
-    def __init__(self, parent):
-        super().__init__(parent)
-
-        self.return_button_static = customtkinter.CTkButton(
-            self, text="", image=returnicon, fg_color=COLOR_BG,
-            hover_color=COLOR_HOVER,
-            width=60, height=60,
-            command=lambda: parent.show_frame(parent.static_scraper)
-        )
-        self.return_button_static.place(x=50, y=50, anchor="center")
-
-        self.info_label = customtkinter.CTkLabel(
-            self, text="HOW TO USE?",
-            font=("Segoe UI Black", 40, "bold"),
-            text_color=COLOR_TITLE
-        )
-        self.info_label.place(relx=0.5, y=60, anchor="center")
-
-class Pantalla_Informacion_Dynamic(BaseScreen):
-    def __init__(self, parent):
-        super().__init__(parent)
-
-        self.return_button_dynamic = customtkinter.CTkButton(
-            self, text="", image=returnicon, fg_color=COLOR_BG,
-            hover_color=COLOR_HOVER,
-            width=60, height=60,
-            command=lambda: parent.show_frame(parent.dynamic_scraper)
-        )
-        self.return_button_dynamic.place(x=50, y=50, anchor="center")
-
-        self.info_label = customtkinter.CTkLabel(
-            self, text="HOW TO USE",
-            font=("Segoe UI Black", 40, "bold"),
-            text_color=COLOR_TITLE
-        )
-        self.info_label.place(relx=0.5, y=60, anchor="center")
-
-
 # Scraper estático (WIKI)
 class Static_Scraper(BaseScreen):
     def __init__(self, parent):
@@ -416,14 +375,6 @@ class Static_Scraper(BaseScreen):
 
         self.config_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=190, width=100)
         self.config_frame.place(relx=0.98, y=20, anchor="ne")
-
-        self.question_button = customtkinter.CTkButton(
-            self.config_frame, text="", image=questionicon,
-            width=60, height=60, fg_color=COLOR_BG,
-            hover_color=COLOR_HOVER,
-            command=lambda: parent.show_frame(parent.pantalla_informacion_static)
-        )
-        self.question_button.pack(pady=10, padx=10)
 
         self.title_label = customtkinter.CTkLabel(
             self, text="WIKI",
@@ -653,14 +604,6 @@ class Dynamic_Scraper(BaseScreen):
         self.config_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=190, width=100)
         self.config_frame.place(relx=0.98, y=20, anchor="ne")
 
-        self.question_button = customtkinter.CTkButton(
-            self.config_frame, text="", image=questionicon,
-            width=60, height=60, fg_color=COLOR_BG,
-            hover_color=COLOR_HOVER,
-            command=lambda: parent.show_frame(parent.pantalla_informacion_dynamic)
-        )
-        self.question_button.pack(pady=10, padx=10)
-
         self.buttom_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=200, width=700)
         self.buttom_frame.place(relx=0.5, y=220, anchor="center")
 
@@ -875,10 +818,10 @@ class Pantalla_Metro_Cuadrado(BaseScreen):
         )
         self.list_frame.place(relx=0.51, y=225, anchor="w")
 
-        self.list_box_1 = customtkinter.CTkComboBox(self.list_frame, values=FincaRaiz.Types, width=318, height=30)
+        self.list_box_1 = customtkinter.CTkComboBox(self.list_frame, values=MetroCuadrado.Types, width=318, height=30)
         self.list_box_1.place(x=147, rely=0.5, anchor="w")
 
-        self.list_box_2 = customtkinter.CTkComboBox(self.list_frame, values=FincaRaiz.operationTypes, width=137, height=30)
+        self.list_box_2 = customtkinter.CTkComboBox(self.list_frame, values=MetroCuadrado.operationTypes, width=137, height=30)
         self.list_box_2.place(x=10, rely=0.5, anchor="w")
 
     def update_city_suggestions(self, event):

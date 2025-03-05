@@ -1,6 +1,6 @@
 import scrapy
 from scrapy.crawler import CrawlerProcess 
-from scrapy_playwright.page import PageCou
+#from scrapy_playwright.page import PageCoroutine
 
 class MetrocuadradoSpider(scrapy.Spider):
     name = 'metrocuadrado_realstate'
@@ -67,6 +67,8 @@ geoId = {
     "bogota":3688685
     }
 
+Types = list(propertyTypes.keys())
+
 # Choose
 # input(operation)
 # input(property)
@@ -87,6 +89,6 @@ for i in range(1, len(property)):
 location = str(geoId.get(location))
 
 # Scrape
-process = CrawlerProcess()
-process.crawl(MetrocuadradoSpider, operation, property, location)
-process.start()
+#process = CrawlerProcess()
+#process.crawl(MetrocuadradoSpider, operation, property, location)
+#process.start()

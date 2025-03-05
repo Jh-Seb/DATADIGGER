@@ -3,7 +3,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 
 from gui.app_gui_start import start_app
 from gui.DKDE import DKDE
-from reports.static_report import Generator_report
 
 def main():
     downloads = os.path.join(os.path.expanduser("~"), "Downloads")
