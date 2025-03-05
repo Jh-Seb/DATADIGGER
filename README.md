@@ -118,47 +118,229 @@ DATADIGGER/
 ## DIAGRAMA DE CLASES
 ```mermaid
 classDiagram
-    class Scraper {
-        - url: str
-        - data: str
-        + scrape()
+    %%================= Scraper and Report Classes =================
+    class WIKISCRAPER {
+      - URL : str
+      - page : Response
+      - soup : BeautifulSoup
+      + __init__(url: str = None)
+      + title_extractor() : str
+      + general_content_extractor() : list
+      + paragraphs_extractor(selected_sections: list) : dict
+      + related_words_extractor() : dict
     }
 
-    class WikiScraper {
-        - link: list
-        + extraer_info_relevante()
-        + generar_pdf(contenido)
-        + sugerir_temas()
+    class ReportPDF {
+      + header()
+      + footer()
+      + nickname(title: str)
+      + indice(secciones, parrafos)
     }
 
-    class RealEstateScraper {
-        - dynamic_data: dict
-        + extraer_propiedades()
-        + sectorizar_por_ciudad(ciudad)
-        + sectorizar_por_localidad(localidad)
-        + filtrar_propiedades(nuevo, usado, arriendo)
+    class Generator_report {
+      + __init__()
+      + generar()
+    }
+    ReportPDF <|-- Generator_report
+
+    %%================= Shared State and Configuration =================
+    class SharedState {
+      - titulo : str
+      - parrafos : dict
+      - secciones : list
+      - archive : str = "extracto_wikipedia.json"
+      + cargar() : dict
+      + guardar(estado: dict)
+      + set_titulo(value: str)
+      + get_titulo() : str
+      + set_parrafos(value: dict)
+      + get_parrafos() : dict
     }
 
-    class GUI {
-        - ventana_principal: object
-        - opciones_scraper: dict
-        - widgets_pantalla_principal: list
-        + mostrar_pantalla_principal()
-        + mostrar_opciones_scraper()
-        + manejar_entrada_usuario()
-        + navegar_a_scraper(scraper_type)
-        + aplicar_filtro()
+    class ConfigManager {
+      <<static>>
+      + CONFIG_FILE : str = "config.json"
+      + load_config() : dict
+      + update_config(theme: str = None, reports_directory: str = None) : dict
     }
 
-    class ReportGenerator {
-        + generar_pdf(datos)
-        + generar_excel(datos)
-        + descargar_informe(tipo_informe)
+    %%================= GUI Base and Application =================
+    class BaseScreen {
+      - parent
+      + __init__(parent)
+      + clear_widget(widget_name: str)
     }
 
-    Scraper <|-- WikiScraper
-    Scraper <|-- RealEstateScraper
-    GUI --* Scraper
-    ReportGenerator --* Scraper
+    class APPGUIRED {
+      - pantalla_principal
+      - pantalla_configuracion
+      - pantalla_creadores
+      - pantalla_informacion_static
+      - static_scraper
+      - dynamic_scraper
+      - pantalla_properati
+      - pantalla_metro_cuadrado
+      - pantalla_finca_raiz
+      - reports
+      + __init__()
+      + show_frame(frame)
+    }
+
+    %%================= GUI Screen Classes =================
+    class Pantalla_Principal {
+      - buttom_frame_1
+      - buttom_frame_2
+      - info_frame
+      - config_frame
+      - version_frame
+      - title_label
+      - version_label
+      + __init__(parent)
+    }
+    class Pantalla_Configuracion {
+      - house_button
+      - title_label
+      - config_frame
+      - theme_picker
+      - directory_entry
+      - directory_button
+      + __init__(parent)
+      + change_theme()
+      + change_directory()
+    }
+    class Pantalla_Creadores {
+      - house_button
+      - title_label
+      - creators_frame
+      - creators_label
+      - gif_frame
+      - gif_label
+      + __init__(parent)
+      + animate_gif()
+    }
+    class Pantalla_Informacion_Static {
+      - return_button_static
+      - info_label
+      + __init__(parent)
+    }
+    class Pantalla_Informacion_Dynamic {
+      - return_button_dynamic
+      - info_label
+      + __init__(parent)
+    }
+    class Static_Scraper {
+      - url : str
+      - scraper : WIKISCRAPER
+      - title : str
+      - sections : list
+      - related_words : dict
+      - paragraphs : dict
+      - section_vars : dict
+      + __init__(parent)
+      + start_scraping()
+      + search_url()
+      + show_related_frame()
+      + show_sections_frame()
+      + show_wiki_frame()
+      + global_atributes()
+    }
+    class Dynamic_Scraper {
+      + __init__(parent)
+    }
+    class Pantalla_Properati {
+      - city_list : list
+      - return_button_dynamic
+      - info_label
+      - url_frame
+      - url_entry
+      - search_button
+      - city_scroll_frame
+      - list_frame
+      - list_box_1
+      - list_box_2
+      + __init__(parent)
+      + update_city_suggestions(event)
+      + select_city(city)
+      + export_filters()
+    }
+    class Pantalla_Metro_Cuadrado {
+      - city_list : list
+      - return_button_dynamic
+      - info_label
+      - url_frame
+      - url_entry
+      - search_button
+      - city_scroll_frame
+      - list_frame
+      - list_box_1
+      - list_box_2
+      + __init__(parent)
+      + update_city_suggestions(event)
+      + select_city(city)
+      + export_filters()
+    }
+    class Pantalla_Finca_Raiz {
+      - city_list : list
+      - return_button_dynamic
+      - info_label
+      - url_frame
+      - url_entry
+      - search_button
+      - city_scroll_frame
+      - list_frame
+      - list_box_1
+      - list_box_2
+      + __init__(parent)
+      + update_city_suggestions(event)
+      + select_city(city)
+      + export_filters()
+    }
+    class Reports {
+      - house_button
+      - title_label
+      - files_frame
+      + __init__(parent)
+      + refresh_files()
+      + tkraise(aboveThis)
+    }
+
+    %%================= Alternative GUI Startup =================
+    class DKDE {
+      + start_app()
+    }
+
+    %%================= Inheritance and Relationships =================
+    %% Inheritance for GUI Screens
+    BaseScreen <|-- Pantalla_Principal
+    BaseScreen <|-- Pantalla_Configuracion
+    BaseScreen <|-- Pantalla_Creadores
+    BaseScreen <|-- Pantalla_Informacion_Static
+    BaseScreen <|-- Pantalla_Informacion_Dynamic
+    BaseScreen <|-- Static_Scraper
+    BaseScreen <|-- Dynamic_Scraper
+    BaseScreen <|-- Pantalla_Properati
+    BaseScreen <|-- Pantalla_Metro_Cuadrado
+    BaseScreen <|-- Pantalla_Finca_Raiz
+    BaseScreen <|-- Reports
+
+    %% APPGUIRED Composition (contains multiple screens)
+    APPGUIRED --> Pantalla_Principal : contains
+    APPGUIRED --> Pantalla_Configuracion : contains
+    APPGUIRED --> Pantalla_Creadores : contains
+    APPGUIRED --> Pantalla_Informacion_Static : contains
+    APPGUIRED --> Static_Scraper : contains
+    APPGUIRED --> Dynamic_Scraper : contains
+    APPGUIRED --> Pantalla_Properati : contains
+    APPGUIRED --> Pantalla_Metro_Cuadrado : contains
+    APPGUIRED --> Pantalla_Finca_Raiz : contains
+    APPGUIRED --> Reports : contains
+
+    %% Module Dependencies
+    Static_Scraper --> WIKISCRAPER : uses
+    Static_Scraper --> SharedState : updates (set_titulo, set_parrafos)
+    Generator_report --> SharedState : reads/writes state
+    Generator_report --> ConfigManager : reads configuration
+    APPGUIRED --> DKDE : alternative startup option
+
 ```
 ¿Por qué se extinguieron los mamuts? Porque no habian paputs
