@@ -1,17 +1,18 @@
-import tkinter
 import os
+import tkinter
 import customtkinter
 import webbrowser
 import shared_state
 import filters
 import tkinter.messagebox as mbox
+import scraper.dynamic_scrapper.dynamic_scrapper.spiders.fincaraiz as FincaRaiz
+import scraper.dynamic_scrapper.dynamic_scrapper.spiders.properati as Properati
+import scraper.dynamic_scrapper.dynamic_scrapper.spiders.metrocuadrado as MetroCuadrado
 from tkinter import filedialog
 from config_manager import load_config, update_config
 from PIL import Image, ImageTk, ImageSequence
 from scraper.static_scraper import WIKISCRAPER
-import scraper.dynamic_scrapper.dynamic_scrapper.spiders.fincaraiz as FincaRaiz
-import scraper.dynamic_scrapper.dynamic_scrapper.spiders.properati as Properati
-import scraper.dynamic_scrapper.dynamic_scrapper.spiders.metrocuadrado as MetroCuadrado
+from reports.static_report import Generator_report
 
 # Configuración de apariencia
 customtkinter.set_appearance_mode("dark")
@@ -702,6 +703,7 @@ class Pantalla_Properati(BaseScreen):
         )
         self.info_label.place(relx=0.5, y=60, anchor="center")
 
+        # Crea el buscador junto al boton para generar el archivo scrapeado
         self.url_frame = customtkinter.CTkFrame(
             self, fg_color=COLOR_BG,
             height=50, width=990
@@ -718,17 +720,19 @@ class Pantalla_Properati(BaseScreen):
             text_color=COLOR_TEXT
         )
         self.url_entry.place(x=460, y=25, anchor="center")
+
+        self.url_entry.bind("<KeyRelease>", self.update_city_suggestions)
         
-        self.search_button = customtkinter.CTkButton(
-            self.url_frame, text="search",
+        self.generate_button = customtkinter.CTkButton(
+            self.url_frame, text="generate",
             width=60, height=30,
             fg_color=COLOR_BUTTON,
             hover_color=COLOR_HOVER,
             border_color=COLOR_BORDER,
             text_color=COLOR_TEXT,
-            
+            command = self.export_filters
         )
-        self.search_button.place(x=950, y=25, anchor="center")
+        self.generate_button.place(x=950, y=25, anchor="center")
 
 
         self.city_frame = customtkinter.CTkFrame(
@@ -765,6 +769,7 @@ class Pantalla_Metro_Cuadrado(BaseScreen):
         )
         self.info_label.place(relx=0.5, y=60, anchor="center")
 
+        # Crea el buscador junto al boton para generar el archivo scrapeado
         self.url_frame = customtkinter.CTkFrame(
             self, fg_color=COLOR_BG,
             height=50, width=990
@@ -781,17 +786,19 @@ class Pantalla_Metro_Cuadrado(BaseScreen):
             text_color=COLOR_TEXT
         )
         self.url_entry.place(x=460, y=25, anchor="center")
+
+        self.url_entry.bind("<KeyRelease>", self.update_city_suggestions)
         
-        self.search_button = customtkinter.CTkButton(
-            self.url_frame, text="search",
+        self.generate_button = customtkinter.CTkButton(
+            self.url_frame, text="generate",
             width=60, height=30,
             fg_color=COLOR_BUTTON,
             hover_color=COLOR_HOVER,
             border_color=COLOR_BORDER,
             text_color=COLOR_TEXT,
-            
+            command = self.export_filters
         )
-        self.search_button.place(x=950, y=25, anchor="center")
+        self.generate_button.place(x=950, y=25, anchor="center")
 
         self.city_frame = customtkinter.CTkFrame(
             self, fg_color="white",
@@ -833,6 +840,7 @@ class Pantalla_Properati(BaseScreen):
         )
         self.info_label.place(relx=0.5, y=60, anchor="center")
 
+        # Crea el buscador junto al boton para generar el archivo scrapeado
         self.url_frame = customtkinter.CTkFrame(
             self, fg_color=COLOR_BG,
             height=50, width=990
@@ -852,8 +860,8 @@ class Pantalla_Properati(BaseScreen):
 
         self.url_entry.bind("<KeyRelease>", self.update_city_suggestions)
         
-        self.search_button = customtkinter.CTkButton(
-            self.url_frame, text="search",
+        self.generate_button = customtkinter.CTkButton(
+            self.url_frame, text="generate",
             width=60, height=30,
             fg_color=COLOR_BUTTON,
             hover_color=COLOR_HOVER,
@@ -861,7 +869,7 @@ class Pantalla_Properati(BaseScreen):
             text_color=COLOR_TEXT,
             command = self.export_filters
         )
-        self.search_button.place(x=950, y=25, anchor="center")
+        self.generate_button.place(x=950, y=25, anchor="center")
 
         
         self.city_scroll_frame = customtkinter.CTkScrollableFrame(

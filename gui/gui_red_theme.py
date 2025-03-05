@@ -1,24 +1,25 @@
-import tkinter
 import os
+import tkinter
 import customtkinter
 import webbrowser
 import shared_state
 import filters
 import tkinter.messagebox as mbox
+import scraper.dynamic_scrapper.dynamic_scrapper.spiders.fincaraiz as FincaRaiz
+import scraper.dynamic_scrapper.dynamic_scrapper.spiders.properati as Properati
+import scraper.dynamic_scrapper.dynamic_scrapper.spiders.metrocuadrado as MetroCuadrado
 from tkinter import filedialog
 from config_manager import load_config, update_config
 from PIL import Image, ImageTk, ImageSequence
 from scraper.static_scraper import WIKISCRAPER
-import scraper.dynamic_scrapper.dynamic_scrapper.spiders.fincaraiz as FincaRaiz
-import scraper.dynamic_scrapper.dynamic_scrapper.spiders.properati as Properati
-import scraper.dynamic_scrapper.dynamic_scrapper.spiders.metrocuadrado as MetroCuadrado
+from reports.static_report import Generator_report
 
 # Configuración de apariencia
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("green")
 customtkinter.deactivate_automatic_dpi_awareness()
 
-# --------- PALETA DE COLORES CYBERPUNK (ROJA) ---------
+# -------------- PALETA DE COLORES  ---------------
 COLOR_BG               = "#100b0b"  # Fondo principal
 COLOR_BUTTON           = "#2b0d0d"  # Fondo de botones
 COLOR_BORDER           = "#aa1f1f"  # Contorno de botones
@@ -29,7 +30,7 @@ COLOR_FRAME            = "#2b0d0d"  # Fondo de frames "oscuros"
 COLOR_HIGHLIGHT_FRAME  = "#ff3b3b"  # Fondo de frames "destacados"
 COLOR_ERROR_TEXT       = "red"      # Texto para mensajes de error
 
-# Definir Imágenes (una sola vez)
+# Definir Imágenes 
 logo = customtkinter.CTkImage(
     light_image=Image.open(r'assets\red_theme\logo2.png'),
     dark_image=Image.open(r'assets\red_theme\logo2.png'),
@@ -216,6 +217,7 @@ class Pantalla_Principal(BaseScreen):
         )
         self.coming_button.place(relx=0.5, rely=0.5, anchor="center")
 
+# Pantalla de Configuración
 class Pantalla_Configuracion(BaseScreen):
     def __init__(self, parent):
         super().__init__(parent)
@@ -223,6 +225,7 @@ class Pantalla_Configuracion(BaseScreen):
         self.place(relx=0, rely=0, relwidth=1, relheight=1)
         self.configure(fg_color=COLOR_BG)
 
+        # Widgets Principales
         self.house_button = customtkinter.CTkButton(
             self, text="", image=homeicon, fg_color=COLOR_BG, hover_color=COLOR_HOVER,
             width=60, height=60, command=lambda: parent.show_frame(parent.pantalla_principal)
@@ -234,6 +237,7 @@ class Pantalla_Configuracion(BaseScreen):
         )
         self.title_label.place(relx=0.5, y=40, anchor="center")
 
+        # Crear la configuración
         self.config_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=400, width=400)
         self.config_frame.place(relx=0.5, y=260, anchor="center")
         
@@ -242,7 +246,7 @@ class Pantalla_Configuracion(BaseScreen):
         self.theme_picker = customtkinter.CTkComboBox(self.config_frame, values=themes, height=40, width=100)
         self.theme_picker.place(x=90, y=60, anchor="center")
         
-        
+        # Cargar tema actual desde JSON
         config = load_config()
         current_theme = config.get("theme", "blue").capitalize()
         self.theme_picker.set(current_theme)
@@ -253,7 +257,7 @@ class Pantalla_Configuracion(BaseScreen):
         )
         self.theme_button.place(x=190, y=60, anchor="center")
 
-        
+        # Cargar carpeta actual desde JSON
         default_directory = config.get("reports_directory", os.path.join(os.path.expanduser("~"), "Downloads", "reports"))
         self.directory_entry = customtkinter.CTkEntry(
             self.config_frame,
@@ -280,6 +284,7 @@ class Pantalla_Configuracion(BaseScreen):
         
         self.directory = default_directory
 
+    # Cambiar el directorio actual del JSON
     def change_directory(self):
         
         path_text = self.directory_entry.get().strip()
@@ -306,11 +311,13 @@ class Pantalla_Configuracion(BaseScreen):
         update_config(theme=new_theme)
         mbox.showinfo("Actualizado", "Tema actualizado, porfavor vuelva a abrir el programa para visualizar los cambios")
 
+# Pantalla de Información
 class Pantalla_Informacion(BaseScreen):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
 
+        # Widgets principales
         self.house_button = customtkinter.CTkButton(
             self, text="", image=homeicon, fg_color=COLOR_BG,
             hover_color=COLOR_HOVER,
@@ -326,6 +333,7 @@ class Pantalla_Informacion(BaseScreen):
         )
         self.title_label.place(relx=0.5, y=40, anchor="center")
 
+        # Boton del repositorio de GitHub
         self.git_frame = customtkinter.CTkFrame(
             self,fg_color= COLOR_BG, width=900, height= 100
         )
@@ -352,6 +360,7 @@ class Pantalla_Creadores(BaseScreen):
         super().__init__(parent)
         self.parent = parent
 
+        # Widgets principales
         self.house_button = customtkinter.CTkButton(
             self, text="", image=homeicon, fg_color=COLOR_BG,
             hover_color=COLOR_HOVER,
@@ -367,6 +376,7 @@ class Pantalla_Creadores(BaseScreen):
         )
         self.title_label.place(relx=0.5, y=40, anchor="center")
 
+        # Nombres de los creadores
         self.creators_frame = customtkinter.CTkFrame(
             self, fg_color=COLOR_BG, height=300, width=400
         )
@@ -384,6 +394,7 @@ class Pantalla_Creadores(BaseScreen):
         )
         self.creators_label.place(relx=0.5, rely=0.5, anchor="center")
 
+        # Gif inferior izquierdo
         self.gif_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG,width=272, height=168)
         self.gif_frame.place(x = 156, rely=0.9, anchor="center")
 
@@ -398,6 +409,7 @@ class Pantalla_Creadores(BaseScreen):
 
         self.animate_gif()
 
+    # Animar el GIF
     def animate_gif(self):
         def update_gif(index):
             self.gif_label.config(image=self.frames[index])
@@ -411,6 +423,7 @@ class Static_Scraper(BaseScreen):
         super().__init__(parent)
         self.parent = parent
 
+        # Widgets principales
         self.house_button = customtkinter.CTkButton(
             self, text="", image=homeicon, fg_color=COLOR_BG,
             hover_color=COLOR_HOVER,
@@ -419,9 +432,6 @@ class Static_Scraper(BaseScreen):
         )
         self.house_button.place(x=50, y=50, anchor="center")
 
-        self.config_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=190, width=100)
-        self.config_frame.place(relx=0.98, y=20, anchor="ne")
-
         self.title_label = customtkinter.CTkLabel(
             self, text="WIKI",
             font=("Segoe UI Black", 40, "bold"),
@@ -429,6 +439,7 @@ class Static_Scraper(BaseScreen):
         )
         self.title_label.place(relx=0.5, y=40, anchor="center")
 
+        # Informacion sobre el scraping
         self.status_label = customtkinter.CTkLabel(
             self, text="",
             height=30, width=400,
@@ -436,6 +447,7 @@ class Static_Scraper(BaseScreen):
         )
         self.status_label.place(relx=0.5, y=95, anchor="center")
 
+        # Buscador
         self.url_frame = customtkinter.CTkFrame(
             self, fg_color=COLOR_BG,
             height=50, width=990
@@ -464,6 +476,7 @@ class Static_Scraper(BaseScreen):
         )
         self.search_button.place(x=950, y=25, anchor="center")
 
+    # Empieza el scraping reuniendo varios metodos en uno
     def start_scraping(self):
         # Limpieza de widgets previos
         for widget in ["sections_frame", "wiki_frame", "related_frame", "sections_label", "related_label"]:
@@ -473,6 +486,7 @@ class Static_Scraper(BaseScreen):
         self.show_related_frame()
         self.show_sections_frame()
 
+    # Busca la URL y le aplica los metodos de WIKISCRAPER()
     def search_url(self):
         self.url = self.url_entry.get().strip()
         if not self.url:
@@ -487,6 +501,7 @@ class Static_Scraper(BaseScreen):
         except Exception as e:
             self.status_label.configure(text=f"Error: {e}", text_color=COLOR_ERROR_TEXT)
 
+    # Muestra un frame con las palabras relacionadas y permite ir a la wiki de cada palabra
     def show_related_frame(self):
         for widget in ["related_frame", "related_label"]:
             self.clear_widget(widget)
@@ -519,6 +534,7 @@ class Static_Scraper(BaseScreen):
                 command=open_wiki
             ).pack(pady=10)
 
+    # Muesta las secciones del wiki y permite seleccionar cuales agregar al documento
     def show_sections_frame(self):
         self.sections_label = customtkinter.CTkLabel(
             self, text="Secciones",
@@ -563,7 +579,8 @@ class Static_Scraper(BaseScreen):
             command=self.show_wiki_frame
         )
         self.continue_button.pack(pady=20)
-
+    
+    # Muestra una previsualización del archivo y permite generarlo
     def show_wiki_frame(self):
         for widget in ["related_frame", "related_label", "sections_label"]:
             self.clear_widget(widget)
@@ -622,16 +639,19 @@ class Static_Scraper(BaseScreen):
         self.report_gen_button.place(relx=0.5, y=215, anchor="center")
 
     
-
+    # Envia las variables para que se genere el reporte
     def global_atributes(self):
         shared_state.set_titulo(self.title)
         shared_state.set_parrafos(self.paragraphs)
         from reports.static_report import Generator_report
         Generator_report().generar()
+
 # Scraper dinámico
 class Dynamic_Scraper(BaseScreen):
     def __init__(self, parent):
         super().__init__(parent)
+        
+        # Widgets principales
         self.house_button = customtkinter.CTkButton(
             self, text="", image=homeicon, fg_color=COLOR_BG,
             hover_color=COLOR_HOVER,
@@ -647,9 +667,7 @@ class Dynamic_Scraper(BaseScreen):
         )
         self.title_label.place(relx=0.5, y=40, anchor="center")
 
-        self.config_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=190, width=100)
-        self.config_frame.place(relx=0.98, y=20, anchor="ne")
-
+        # Crea el frame para los botones de las paginas: "Metro Cuadrado", "FincaRaiz", "Properati"
         self.buttom_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=200, width=700)
         self.buttom_frame.place(relx=0.5, y=220, anchor="center")
 
@@ -681,7 +699,7 @@ class Dynamic_Scraper(BaseScreen):
         )
         self.proper_button.place(relx=0.83, rely=0.5, anchor="center")
 
-
+# Pantalla del Properati Scraper
 class Pantalla_Properati(BaseScreen):
     def __init__(self, parent):
         super().__init__(parent)
@@ -691,7 +709,7 @@ class Pantalla_Properati(BaseScreen):
             "Bucaramanga","Yopal","Cartagena","Santa Marta",
             "Villavicencio","Tunja","Leticia","Manizales","Ibague"
         ]
-
+        # Widgets principales
         self.return_button_dynamic = customtkinter.CTkButton(
             self, text="", image=returnicon, fg_color=COLOR_BG,
             hover_color=COLOR_HOVER,
@@ -707,6 +725,7 @@ class Pantalla_Properati(BaseScreen):
         )
         self.info_label.place(relx=0.5, y=60, anchor="center")
 
+        # Crea el buscador junto al boton para generar el archivo scrapeado
         self.url_frame = customtkinter.CTkFrame(
             self, fg_color=COLOR_BG,
             height=50, width=990
@@ -726,8 +745,8 @@ class Pantalla_Properati(BaseScreen):
 
         self.url_entry.bind("<KeyRelease>", self.update_city_suggestions)
         
-        self.search_button = customtkinter.CTkButton(
-            self.url_frame, text="search",
+        self.generate_button = customtkinter.CTkButton(
+            self.url_frame, text="generate",
             width=60, height=30,
             fg_color=COLOR_BUTTON,
             hover_color=COLOR_HOVER,
@@ -735,7 +754,7 @@ class Pantalla_Properati(BaseScreen):
             text_color=COLOR_TEXT,
             command = self.export_filters
         )
-        self.search_button.place(x=950, y=25, anchor="center")
+        self.generate_button.place(x=950, y=25, anchor="center")
 
         
         self.city_scroll_frame = customtkinter.CTkScrollableFrame(
@@ -821,6 +840,7 @@ class Pantalla_Metro_Cuadrado(BaseScreen):
         )
         self.info_label.place(relx=0.5, y=60, anchor="center")
 
+        # Crea el buscador junto al boton para generar el archivo scrapeado
         self.url_frame = customtkinter.CTkFrame(
             self, fg_color=COLOR_BG,
             height=50, width=990
@@ -840,8 +860,8 @@ class Pantalla_Metro_Cuadrado(BaseScreen):
 
         self.url_entry.bind("<KeyRelease>", self.update_city_suggestions)
         
-        self.search_button = customtkinter.CTkButton(
-            self.url_frame, text="search",
+        self.generate_button = customtkinter.CTkButton(
+            self.url_frame, text="generate",
             width=60, height=30,
             fg_color=COLOR_BUTTON,
             hover_color=COLOR_HOVER,
@@ -849,8 +869,7 @@ class Pantalla_Metro_Cuadrado(BaseScreen):
             text_color=COLOR_TEXT,
             command = self.export_filters
         )
-        self.search_button.place(x=950, y=25, anchor="center")
-
+        self.generate_button.place(x=950, y=25, anchor="center")
         
         self.city_scroll_frame = customtkinter.CTkScrollableFrame(
             self, fg_color=COLOR_BG,
@@ -939,6 +958,13 @@ class Pantalla_Finca_Raiz(BaseScreen):
         )
         self.url_frame.place(relx=0.5, y=155, anchor="center")
         
+        # Crea el buscador junto al boton para generar el archivo scrapeado
+        self.url_frame = customtkinter.CTkFrame(
+            self, fg_color=COLOR_BG,
+            height=50, width=990
+        )
+        self.url_frame.place(relx=0.5, y=155, anchor="center")
+        
         self.url_entry = customtkinter.CTkEntry(
             self.url_frame,
             placeholder_text="URL",
@@ -952,8 +978,8 @@ class Pantalla_Finca_Raiz(BaseScreen):
 
         self.url_entry.bind("<KeyRelease>", self.update_city_suggestions)
         
-        self.search_button = customtkinter.CTkButton(
-            self.url_frame, text="search",
+        self.generate_button = customtkinter.CTkButton(
+            self.url_frame, text="generate",
             width=60, height=30,
             fg_color=COLOR_BUTTON,
             hover_color=COLOR_HOVER,
@@ -961,7 +987,7 @@ class Pantalla_Finca_Raiz(BaseScreen):
             text_color=COLOR_TEXT,
             command = self.export_filters
         )
-        self.search_button.place(x=950, y=25, anchor="center")
+        self.generate_button.place(x=950, y=25, anchor="center")
 
         
         self.city_scroll_frame = customtkinter.CTkScrollableFrame(
