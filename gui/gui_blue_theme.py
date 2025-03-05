@@ -614,14 +614,22 @@ class Static_Scraper(BaseScreen):
             hover_color=COLOR_HOVER,
             border_color=COLOR_BORDER,
             text_color=COLOR_TEXT,
-            command=self.global_atributes
+            command=self.generate_button
         )
         self.report_gen_button.place(relx=0.5, y=215, anchor="center")
+
+    def generate_button(self):
+        self.global_atributes()
+        self.generate_button()
 
     def global_atributes(self):
         shared_state.set_titulo(self.title)
         shared_state.secciones = self.sections
         shared_state.set_parrafos(self.paragraphs_label.cget("text"))
+
+    def generate_report():
+        Generator_report.generar()
+
 
 # Scraper dinámico
 class Dynamic_Scraper(BaseScreen):
