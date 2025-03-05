@@ -3,6 +3,7 @@ import os
 import customtkinter
 import webbrowser
 import shared_state
+import filters
 import tkinter.messagebox as mbox
 from tkinter import filedialog
 from config_manager import load_config, update_config
@@ -747,7 +748,8 @@ class Pantalla_Properati(BaseScreen):
             fg_color=COLOR_BUTTON,
             hover_color=COLOR_HOVER,
             border_color=COLOR_BORDER,
-            text_color=COLOR_TEXT
+            text_color=COLOR_TEXT,
+            command = self.export_filters
         )
         self.search_button.place(x=950, y=25, anchor="center")
 
@@ -804,7 +806,10 @@ class Pantalla_Properati(BaseScreen):
             widget.destroy()
 
 
-
+    def export_filters(self):
+        filters.operation_type = self.list_box_2.get()
+        filters.property_type = self.list_box_1.get()
+        filters.city = self.url_entry.get()
 
         
 class Pantalla_Metro_Cuadrado(BaseScreen):
@@ -857,7 +862,8 @@ class Pantalla_Metro_Cuadrado(BaseScreen):
             fg_color=COLOR_BUTTON,
             hover_color=COLOR_HOVER,
             border_color=COLOR_BORDER,
-            text_color=COLOR_TEXT
+            text_color=COLOR_TEXT,
+            command = self.export_filters
         )
         self.search_button.place(x=950, y=25, anchor="center")
 
@@ -912,6 +918,11 @@ class Pantalla_Metro_Cuadrado(BaseScreen):
         self.url_entry.insert(0, city)
         for widget in self.city_frame.winfo_children():
             widget.destroy()
+
+    def export_filters(self):
+        filters.operation_type = self.list_box_2.get()
+        filters.property_type = self.list_box_1.get()
+        filters.city = self.url_entry.get()
 
 class Pantalla_Finca_Raiz(BaseScreen):
     def __init__(self, parent):
@@ -963,7 +974,8 @@ class Pantalla_Finca_Raiz(BaseScreen):
             fg_color=COLOR_BUTTON,
             hover_color=COLOR_HOVER,
             border_color=COLOR_BORDER,
-            text_color=COLOR_TEXT
+            text_color=COLOR_TEXT,
+            command = self.export_filters
         )
         self.search_button.place(x=950, y=25, anchor="center")
 
@@ -1018,6 +1030,11 @@ class Pantalla_Finca_Raiz(BaseScreen):
         self.url_entry.insert(0, city)
         for widget in self.city_frame.winfo_children():
             widget.destroy()
+
+    def export_filters(self):
+        filters.operation_type = self.list_box_2.get()
+        filters.property_type = self.list_box_1.get()
+        filters.city = self.url_entry.get()
 
 
 
