@@ -64,7 +64,7 @@ propertyTypes = {"apartaestudios":"studio",
 geoId = {
     "bogota":3688685
     }
-
+Types = list(propertyTypes.keys())
 # Choose
 # input(operation)
 # input(property)
@@ -85,6 +85,6 @@ for i in range(1, len(property)):
 location = str(geoId.get(location))
 
 # Scrape
-process = CrawlerProcess()
-process.crawl(ProperatiScrapper, operation, property, location)
-process.start()
+#process = CrawlerProcess()
+#process.crawl(ProperatiScrapper, operation, property, location)
+#process.start()

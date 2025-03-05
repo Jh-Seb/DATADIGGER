@@ -8,6 +8,9 @@ from tkinter import filedialog
 from config_manager import load_config, update_config
 from PIL import Image, ImageTk, ImageSequence
 from scraper.static_scraper import WIKISCRAPER
+import scraper.dynamic_scrapper.dynamic_scrapper.spiders.fincaraiz as FincaRaiz
+import scraper.dynamic_scrapper.dynamic_scrapper.spiders.properati as Properati
+import scraper.dynamic_scrapper.dynamic_scrapper.spiders.metrocuadrado as MetroCuadrado
 
 # Configuración de apariencia
 customtkinter.set_appearance_mode("dark")
@@ -814,9 +817,231 @@ class Pantalla_Metro_Cuadrado(BaseScreen):
         self.city_label = customtkinter.CTkLabel(self.city_frame,text="hola", text_color= "black")
         self.city_label.place(x = 20, rely = 0.5, anchor=("w"))
 
+class Pantalla_Properati(BaseScreen):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.city_list = [
+            "Bogota","Cucuta","Medellin","Barranquilla","Cali",
+            "Bucaramanga","Yopal","Cartagena","Santa Marta",
+            "Villavicencio","Tunja","Leticia","Manizales","Ibague"
+        ]
+
+        self.return_button_dynamic = customtkinter.CTkButton(
+            self, text="", image=returnicon, fg_color=COLOR_BG,
+            hover_color=COLOR_HOVER,
+            width=60, height=60,
+            command=lambda: parent.show_frame(parent.dynamic_scraper)
+        )
+        self.return_button_dynamic.place(x=50, y=50, anchor="center")
+
+        self.info_label = customtkinter.CTkLabel(
+            self, text="PROPERATI",
+            font=("Segoe UI Black", 40, "bold"),
+            text_color=COLOR_TITLE
+        )
+        self.info_label.place(relx=0.5, y=60, anchor="center")
+
+        self.url_frame = customtkinter.CTkFrame(
+            self, fg_color=COLOR_BG,
+            height=50, width=990
+        )
+        self.url_frame.place(relx=0.5, y=155, anchor="center")
+        
+        self.url_entry = customtkinter.CTkEntry(
+            self.url_frame,
+            placeholder_text="URL",
+            width=900,
+            height=30,
+            fg_color=COLOR_FRAME,
+            border_color=COLOR_BORDER,
+            text_color=COLOR_TEXT
+        )
+        self.url_entry.place(x=460, y=25, anchor="center")
+
+        self.url_entry.bind("<KeyRelease>", self.update_city_suggestions)
+        
+        self.search_button = customtkinter.CTkButton(
+            self.url_frame, text="search",
+            width=60, height=30,
+            fg_color=COLOR_BUTTON,
+            hover_color=COLOR_HOVER,
+            border_color=COLOR_BORDER,
+            text_color=COLOR_TEXT
+        )
+        self.search_button.place(x=950, y=25, anchor="center")
+
+        
+        self.city_scroll_frame = customtkinter.CTkScrollableFrame(
+            self, fg_color=COLOR_BG,
+            width=485, height=150
+        )
+        self.city_scroll_frame.place(relx=0.49, y=285, anchor="e")
+
+        self.list_frame = customtkinter.CTkFrame(
+            self, fg_color=COLOR_BG,
+            height=50, width=485
+        )
+        self.list_frame.place(relx=0.51, y=225, anchor="w")
+
+        self.list_box_1 = customtkinter.CTkComboBox(self.list_frame, values=Properati.Types, width=318, height=30)
+        self.list_box_1.place(x=147, rely=0.5, anchor="w")
+
+        self.list_box_2 = customtkinter.CTkComboBox(self.list_frame, values=Properati.operationTypes, width=137, height=30)
+        self.list_box_2.place(x=10, rely=0.5, anchor="w")
+
+    def update_city_suggestions(self, event):
+        typed = self.url_entry.get().strip()
+        for widget in self.city_scroll_frame.winfo_children():
+            widget.destroy()
+
+        if typed:
+            for city in self.city_list:
+                if typed.lower() in city.lower():
+                    label = customtkinter.CTkLabel(
+                        self.city_scroll_frame,
+                        text=city,
+                        text_color=COLOR_TITLE,
+                        fg_color=COLOR_BUTTON,
+                        corner_radius=50,
+                        anchor="w",
+                        justify="left"
+                    )
+                    label.pack(side="top", fill="x", padx=10, pady=2)
+                    label.bind("<Button-1>", lambda e, c=city: self.select_city(c))
+
+    def select_city(self, city):
+        self.url_entry.delete(0, "end")
+        self.url_entry.insert(0, city)
+        for widget in self.city_scroll_frame.winfo_children():
+            widget.destroy()
+
+
+    def select_city(self, city):
+        self.url_entry.delete(0, "end")
+        self.url_entry.insert(0, city)
+        for widget in self.city_frame.winfo_children():
+            widget.destroy()
+
+
+
+
+        
+class Pantalla_Metro_Cuadrado(BaseScreen):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.city_list = [
+            "Bogota","Cucuta","Medellin","Barranquilla","Cali",
+            "Bucaramanga","Yopal","Cartagena","Santa Marta",
+            "Villavicencio","Tunja","Leticia","Manizales","Ibague"
+        ]
+
+        self.return_button_dynamic = customtkinter.CTkButton(
+            self, text="", image=returnicon, fg_color=COLOR_BG,
+            hover_color=COLOR_HOVER,
+            width=60, height=60,
+            command=lambda: parent.show_frame(parent.dynamic_scraper)
+        )
+        self.return_button_dynamic.place(x=50, y=50, anchor="center")
+
+        self.info_label = customtkinter.CTkLabel(
+            self, text="METRO CUADRADO",
+            font=("Segoe UI Black", 40, "bold"),
+            text_color=COLOR_TITLE
+        )
+        self.info_label.place(relx=0.5, y=60, anchor="center")
+
+        self.url_frame = customtkinter.CTkFrame(
+            self, fg_color=COLOR_BG,
+            height=50, width=990
+        )
+        self.url_frame.place(relx=0.5, y=155, anchor="center")
+        
+        self.url_entry = customtkinter.CTkEntry(
+            self.url_frame,
+            placeholder_text="URL",
+            width=900,
+            height=30,
+            fg_color=COLOR_FRAME,
+            border_color=COLOR_BORDER,
+            text_color=COLOR_TEXT
+        )
+        self.url_entry.place(x=460, y=25, anchor="center")
+
+        self.url_entry.bind("<KeyRelease>", self.update_city_suggestions)
+        
+        self.search_button = customtkinter.CTkButton(
+            self.url_frame, text="search",
+            width=60, height=30,
+            fg_color=COLOR_BUTTON,
+            hover_color=COLOR_HOVER,
+            border_color=COLOR_BORDER,
+            text_color=COLOR_TEXT
+        )
+        self.search_button.place(x=950, y=25, anchor="center")
+
+        
+        self.city_scroll_frame = customtkinter.CTkScrollableFrame(
+            self, fg_color=COLOR_BG,
+            width=485, height=150
+        )
+        self.city_scroll_frame.place(relx=0.49, y=285, anchor="e")
+
+        self.list_frame = customtkinter.CTkFrame(
+            self, fg_color=COLOR_BG,
+            height=50, width=485
+        )
+        self.list_frame.place(relx=0.51, y=225, anchor="w")
+
+        self.list_box_1 = customtkinter.CTkComboBox(self.list_frame, values=FincaRaiz.Types, width=318, height=30)
+        self.list_box_1.place(x=147, rely=0.5, anchor="w")
+
+        self.list_box_2 = customtkinter.CTkComboBox(self.list_frame, values=FincaRaiz.operationTypes, width=137, height=30)
+        self.list_box_2.place(x=10, rely=0.5, anchor="w")
+
+    def update_city_suggestions(self, event):
+        typed = self.url_entry.get().strip()
+        for widget in self.city_scroll_frame.winfo_children():
+            widget.destroy()
+
+        if typed:
+            for city in self.city_list:
+                if typed.lower() in city.lower():
+                    label = customtkinter.CTkLabel(
+                        self.city_scroll_frame,
+                        text=city,
+                        text_color=COLOR_TITLE,
+                        fg_color=COLOR_BUTTON,
+                        corner_radius=50,
+                        anchor="w",
+                        justify="left"
+                    )
+                    label.pack(side="top", fill="x", padx=10, pady=2)
+                    label.bind("<Button-1>", lambda e, c=city: self.select_city(c))
+
+    def select_city(self, city):
+        self.url_entry.delete(0, "end")
+        self.url_entry.insert(0, city)
+        for widget in self.city_scroll_frame.winfo_children():
+            widget.destroy()
+
+
+    def select_city(self, city):
+        self.url_entry.delete(0, "end")
+        self.url_entry.insert(0, city)
+        for widget in self.city_frame.winfo_children():
+            widget.destroy()
+
 class Pantalla_Finca_Raiz(BaseScreen):
     def __init__(self, parent):
         super().__init__(parent)
+
+        self.city_list = [
+            "Bogota","Cucuta","Medellin","Barranquilla","Cali",
+            "Bucaramanga","Yopal","Cartagena","Santa Marta",
+            "Villavicencio","Tunja","Leticia","Manizales","Ibague"
+        ]
 
         self.return_button_dynamic = customtkinter.CTkButton(
             self, text="", image=returnicon, fg_color=COLOR_BG,
@@ -849,6 +1074,8 @@ class Pantalla_Finca_Raiz(BaseScreen):
             text_color=COLOR_TEXT
         )
         self.url_entry.place(x=460, y=25, anchor="center")
+
+        self.url_entry.bind("<KeyRelease>", self.update_city_suggestions)
         
         self.search_button = customtkinter.CTkButton(
             self.url_frame, text="search",
@@ -856,25 +1083,61 @@ class Pantalla_Finca_Raiz(BaseScreen):
             fg_color=COLOR_BUTTON,
             hover_color=COLOR_HOVER,
             border_color=COLOR_BORDER,
-            text_color=COLOR_TEXT,
-            
+            text_color=COLOR_TEXT
         )
         self.search_button.place(x=950, y=25, anchor="center")
 
-        self.city_frame = customtkinter.CTkFrame(
-            self, fg_color="white",
-            height=150, width=485
+        
+        self.city_scroll_frame = customtkinter.CTkScrollableFrame(
+            self, fg_color=COLOR_BG,
+            width=485, height=150
         )
-        self.city_frame.place(relx=0.49, y=275, anchor="e")
+        self.city_scroll_frame.place(relx=0.49, y=285, anchor="e")
 
         self.list_frame = customtkinter.CTkFrame(
-            self, fg_color="white",
+            self, fg_color=COLOR_BG,
             height=50, width=485
         )
         self.list_frame.place(relx=0.51, y=225, anchor="w")
 
-        self.city_label = customtkinter.CTkLabel(self.city_frame,text="hola", text_color= "black")
-        self.city_label.place(x = 20, rely = 0.5, anchor=("w"))
+        self.list_box_1 = customtkinter.CTkComboBox(self.list_frame, values=FincaRaiz.Types, width=318, height=30)
+        self.list_box_1.place(x=147, rely=0.5, anchor="w")
+
+        self.list_box_2 = customtkinter.CTkComboBox(self.list_frame, values=FincaRaiz.operationTypes, width=137, height=30)
+        self.list_box_2.place(x=10, rely=0.5, anchor="w")
+
+    def update_city_suggestions(self, event):
+        typed = self.url_entry.get().strip()
+        for widget in self.city_scroll_frame.winfo_children():
+            widget.destroy()
+
+        if typed:
+            for city in self.city_list:
+                if typed.lower() in city.lower():
+                    label = customtkinter.CTkLabel(
+                        self.city_scroll_frame,
+                        text=city,
+                        text_color=COLOR_TITLE,
+                        fg_color=COLOR_BUTTON,
+                        corner_radius=50,
+                        anchor="w",
+                        justify="left"
+                    )
+                    label.pack(side="top", fill="x", padx=10, pady=2)
+                    label.bind("<Button-1>", lambda e, c=city: self.select_city(c))
+
+    def select_city(self, city):
+        self.url_entry.delete(0, "end")
+        self.url_entry.insert(0, city)
+        for widget in self.city_scroll_frame.winfo_children():
+            widget.destroy()
+
+
+    def select_city(self, city):
+        self.url_entry.delete(0, "end")
+        self.url_entry.insert(0, city)
+        for widget in self.city_frame.winfo_children():
+            widget.destroy()
 
 class Reports(BaseScreen):
     def __init__(self, parent):
@@ -893,7 +1156,7 @@ class Reports(BaseScreen):
         )
         self.title_label.place(relx=0.5, y=40, anchor="center")
         self.files_frame = customtkinter.CTkScrollableFrame(
-            self, fg_color="light gray", width=800, height=400
+            self, fg_color=COLOR_BG, width=800, height=400
         )
         self.files_frame.place(relx=0.5, y=280, anchor="center")
 
@@ -925,6 +1188,7 @@ class Reports(BaseScreen):
     def tkraise(self, aboveThis=None):
         self.refresh_files()
         super().tkraise(aboveThis)
+
 
 
 if __name__ == "__main__":
