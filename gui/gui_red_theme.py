@@ -243,7 +243,7 @@ class Pantalla_Configuracion(BaseScreen):
         self.theme_button.place(x=190, y=60, anchor="center")
 
         
-        default_directory = config.get("directory", os.path.join(os.path.expanduser("~"), "Downloads", "reports"))
+        default_directory = config.get("reports_directory", os.path.join(os.path.expanduser("~"), "Downloads", "reports"))
         self.directory_entry = customtkinter.CTkEntry(
             self.config_frame,
             placeholder_text=default_directory,
@@ -275,7 +275,7 @@ class Pantalla_Configuracion(BaseScreen):
         if path_text:
             if os.path.isdir(path_text):
                 self.directory = path_text
-                update_config(directory=self.directory)
+                update_config(reports_directory=self.directory)
                 self.directory_entry.configure(placeholder_text=self.directory)
                 mbox.showinfo("Actualizado", "Directorio actualizado correctamente.")
             else:
@@ -286,7 +286,7 @@ class Pantalla_Configuracion(BaseScreen):
                                                    title="Seleccione la carpeta de destino para los reports")
             if selected_dir:
                 self.directory = selected_dir
-                update_config(directory=self.directory)
+                update_config(reports_directory=self.directory)
                 self.directory_entry.configure(placeholder_text=self.directory)
                 mbox.showinfo("Actualizado", "Directorio actualizado correctamente.")
 

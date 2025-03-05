@@ -670,13 +670,44 @@ class Reports(BaseScreen):
             command=lambda: parent.show_frame(parent.pantalla_principal)
         )
         self.house_button.place(x=50, y=50, anchor="center")
-
         self.title_label = customtkinter.CTkLabel(
             self, text="REPORTS",
             font=("Segoe UI Black", 40, "bold"),
             text_color=COLOR_TITLE
         )
         self.title_label.place(relx=0.5, y=40, anchor="center")
+        self.files_frame = customtkinter.CTkScrollableFrame(
+            self, fg_color="light gray", width=800, height=400
+        )
+        self.files_frame.place(relx=0.5, y=280, anchor="center")
+        self.refresh_files()
+
+    def refresh_files(self):
+        config = load_config()
+        reports_dir = config.get("reports_directory", os.path.join(os.path.expanduser("~"), "Downloads", "reports"))
+        for widget in self.files_frame.winfo_children():
+            widget.destroy()
+        allowed_exts = ('.pdf', '.xlsx', '.xls')
+        for filename in os.listdir(reports_dir):
+            if filename.lower().endswith(allowed_exts):
+                filepath = os.path.join(reports_dir, filename)
+                btn = customtkinter.CTkButton(
+                    self.files_frame,
+                    text=f"{os.path.splitext(filename)[0]}\nFile Type : {os.path.splitext(filename)[1].upper()}",
+                    width=120,
+                    height=80,
+                    corner_radius=15,
+                    fg_color=COLOR_BUTTON,       
+                    text_color="white",
+                    font=("Segoe UI Black", 16, "bold"),
+                    border_width=3,
+                    border_color=COLOR_BORDER,   
+                    hover_color=COLOR_HOVER,
+                    command=lambda path=filepath: os.startfile(path)
+                )
+                btn.pack(pady=5)
+
+
 
 
 
