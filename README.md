@@ -100,13 +100,19 @@ DATADIGGER/
 ## GUI
 
 ### Pantalla Principal
-![Pantalla Principal](https://github.com/Jh-Seb/DATA-DIGGER/blob/564798ef44c01389cd91daaa0fe6dc4de8263a1a/assets/INTERFAZ%201.jpg)
+![Pantalla Principal](https://github.com/Jh-Seb/DATADIGGER/blob/main/assets/repo_screenshots/pantalla%20principal.png)
 
 ### Wiki Scraper
-![Wiki Scraper](https://github.com/Jh-Seb/DATA-DIGGER/blob/564798ef44c01389cd91daaa0fe6dc4de8263a1a/assets/INTERFAZ%202.jpg)
+![Wiki Scraper](https://github.com/Jh-Seb/DATADIGGER/blob/main/assets/repo_screenshots/wiki%201.png)
+![Wiki Scraper](https://github.com/Jh-Seb/DATADIGGER/blob/main/assets/repo_screenshots/wiki%202.png)
+![Wiki Scraper](https://github.com/Jh-Seb/DATADIGGER/blob/main/assets/repo_screenshots/wiki%203.png)
 
 ### Real State Scraper
-![Real State Scraper](https://github.com/Jh-Seb/DATA-DIGGER/blob/564798ef44c01389cd91daaa0fe6dc4de8263a1a/assets/INTERFAZ%203.jpg)
+![Real State Scraper](https://github.com/Jh-Seb/DATADIGGER/blob/main/assets/repo_screenshots/real%201.png)
+![Real State Scraper](https://github.com/Jh-Seb/DATADIGGER/blob/main/assets/repo_screenshots/real%202.png)
+
+### Reports
+![Reports](https://github.com/Jh-Seb/DATADIGGER/blob/main/assets/repo_screenshots/reports.png)
 
 ---
 ## DIAGRAMA DE CLASES
