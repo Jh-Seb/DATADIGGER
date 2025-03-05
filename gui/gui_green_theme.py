@@ -55,6 +55,11 @@ homeicon = customtkinter.CTkImage(
     dark_image=Image.open(r'assets\green_theme\homeicon.png'),
     size=(60, 60)
 )
+giticon = customtkinter.CTkImage(
+    light_image=Image.open(r'assets\blue_theme\giticon.png'),
+    dark_image=Image.open(r'assets\blue_theme\giticon.png'),
+    size=(60, 60)
+)
 returnicon = customtkinter.CTkImage(
     light_image=Image.open(r'assets\green_theme\returnimage.png'),
     dark_image=Image.open(r'assets\green_theme\returnimage.png'),
@@ -98,6 +103,7 @@ class APPGUIGREEN(customtkinter.CTk):
         self.dynamic_scraper = Dynamic_Scraper(self)
         self.pantalla_creadores = Pantalla_Creadores(self)
         self.pantalla_configuracion = Pantalla_Configuracion(self)
+        self.pantalla_informacion = Pantalla_Informacion(self)
         self.reports = Reports(self)
         self.pantalla_properati = Pantalla_Properati(self)
         self.pantalla_metro_cuadrado = Pantalla_Metro_Cuadrado(self)
@@ -300,6 +306,45 @@ class Pantalla_Configuracion(BaseScreen):
         update_config(theme=new_theme)
         mbox.showinfo("Actualizado", "Tema actualizado, porfavor vuelva a abrir el programa para visualizar los cambios")
         
+class Pantalla_Informacion(BaseScreen):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+        self.house_button = customtkinter.CTkButton(
+            self, text="", image=homeicon, fg_color=COLOR_BG,
+            hover_color=COLOR_HOVER,
+            width=60, height=60,
+            command=lambda: parent.show_frame(parent.pantalla_principal)
+        )
+        self.house_button.place(x=50, y=50, anchor="center")
+
+        self.title_label = customtkinter.CTkLabel(
+            self, text="INFO",
+            font=("Segoe UI Black", 40, "bold"),
+            text_color=COLOR_TITLE
+        )
+        self.title_label.place(relx=0.5, y=40, anchor="center")
+
+        self.git_frame = customtkinter.CTkFrame(
+            self,fg_color= COLOR_BG, width=900, height= 100
+        )
+        self.git_frame.place(relx = 0.5, y = 130, anchor = "center")
+        
+        self.git_button = customtkinter.CTkButton(
+            self.git_frame,text="DATADIGGER --- GIT HUB REPOSITORY",
+            font=("Segoe UI Black", 30, "bold"),
+            image=giticon,
+            corner_radius=50,
+            width=890,
+            height=90,
+            fg_color=COLOR_BUTTON,
+            hover_color=COLOR_HOVER,
+            border_color=COLOR_BORDER,
+            border_width= 3,
+            command= lambda: webbrowser.open("https://github.com/Jh-Seb/DATADIGGER")
+        )
+        self.git_button.place(relx = 0.5, rely=0.5,anchor = "center")
 
 # Pantalla de creadores
 class Pantalla_Creadores(BaseScreen):
