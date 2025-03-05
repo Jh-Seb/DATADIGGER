@@ -8,6 +8,7 @@ import tkinter.messagebox as mbox
 import scraper.dynamic_scrapper.dynamic_scrapper.spiders.fincaraiz as FincaRaiz
 import scraper.dynamic_scrapper.dynamic_scrapper.spiders.properati as Properati
 import scraper.dynamic_scrapper.dynamic_scrapper.spiders.metrocuadrado as MetroCuadrado
+import csv
 from tkinter import filedialog
 from config_manager import load_config, update_config
 from PIL import Image, ImageTk, ImageSequence
@@ -699,11 +700,7 @@ class Pantalla_Properati(BaseScreen):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.city_list = [
-            "Bogota","Cucuta","Medellin","Barranquilla","Cali",
-            "Bucaramanga","Yopal","Cartagena","Santa Marta",
-            "Villavicencio","Tunja","Leticia","Manizales","Ibague"
-        ]
+        
 
         self.return_button_dynamic = customtkinter.CTkButton(
             self, text="", image=returnicon, fg_color=COLOR_BG,
@@ -769,7 +766,12 @@ class Pantalla_Properati(BaseScreen):
 
         self.list_box_2 = customtkinter.CTkComboBox(self.list_frame, values=Properati.operationTypes, width=137, height=30)
         self.list_box_2.place(x=10, rely=0.5, anchor="w")
-
+        self.city_list = []
+        with open('data_cities_properati.csv', 'r', encoding="utf8") as cities_properati:
+            for line in csv.reader(cities_properati):
+                self.city_list.append(line[-1])
+                self.city_list_export.append(line[0])
+            
     def update_city_suggestions(self, event):
         typed = self.url_entry.get().strip()
         for widget in self.city_scroll_frame.winfo_children():
@@ -795,14 +797,6 @@ class Pantalla_Properati(BaseScreen):
         self.url_entry.insert(0, city)
         for widget in self.city_scroll_frame.winfo_children():
             widget.destroy()
-
-
-    def select_city(self, city):
-        self.url_entry.delete(0, "end")
-        self.url_entry.insert(0, city)
-        for widget in self.city_frame.winfo_children():
-            widget.destroy()
-
 
     def export_filters(self):
         filters.operation_type = self.list_box_2.get()

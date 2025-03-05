@@ -51,12 +51,14 @@ class ProperatiCitiesScrapper(scrapy.Spider):
                 yield scrapy.Request(url=url2, callback=self.parse)
     
     def parse(self, response):
+        name = response.url.split(sep='/s/')[1]
         yield{
-            'Ciudad': f'{response.url}'
+            'ciudad': name,
+            'mostrar': name.replace("-", " "),
         }
 # Main -------------------------------------------------------------------------------------
 # Scrape
 process = CrawlerProcess()
-process.crawl(CitiesScrapper)
+#process.crawl(CitiesScrapper)
 process.crawl(ProperatiCitiesScrapper)
 process.start()
