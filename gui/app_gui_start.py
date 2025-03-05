@@ -1,20 +1,32 @@
 import os
 import tkinter as tk
 from tkinter import font as tkFont
+import ctypes
 import customtkinter
 from config_manager import load_config
 from .gui_red_theme import APPGUIRED
 from .gui_blue_theme import APPGUIBLUE
 from .gui_green_theme import APPGUIGREEN
 
-root = tk.Tk()
-root.withdraw()
-font_path = os.path.join("assets", "fonts", "segoe-ui-black.ttf")
-try:
-    segoe_font = tkFont.Font(file=font_path, size=16)
-except Exception as e:
-    print("Error loading font:", e)
-root.destroy()
+def load_custom_font(font_path):
+    FR_PRIVATE = 0x10
+    FR_NOT_ENUM = 0x20
+    path = os.path.abspath(font_path)
+    res = ctypes.windll.gdi32.AddFontResourceExW(ctypes.c_wchar_p(path), FR_PRIVATE | FR_NOT_ENUM, 0)
+    if res == 0:
+        print("Error adding font from:", path)
+    return res
+
+def init_custom_font():
+    root = tk.Tk()
+    root.withdraw()
+    font_path = os.path.join("assets", "fonts", "segoe-ui-black.ttf")
+    load_custom_font(font_path)
+    custom_font = tkFont.Font(root=root, family="Segoe UI Black", size=16)
+    root.destroy()
+    return custom_font
+
+custom_font = init_custom_font()
 
 def start_app():
     config = load_config()
@@ -26,3 +38,6 @@ def start_app():
     else:
         app = APPGUIBLUE()
     app.mainloop()
+
+if __name__ == "__main__":
+    start_app()

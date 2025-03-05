@@ -12,7 +12,7 @@ def main():
     if not os.path.exists(reports_path):
         os.makedirs(reports_path)
     
-    if os.path.exists("coco.jpeg"):
+    if os.path.exists(r"assets\coconut.jpeg"):
         start_app()
     else:
         app = DKDE()

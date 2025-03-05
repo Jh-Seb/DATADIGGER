@@ -97,6 +97,9 @@ class APPGUIRED(customtkinter.CTk):
         self.pantalla_creadores = Pantalla_Creadores(self)
         self.pantalla_configuracion = Pantalla_Configuracion(self)
         self.reports = Reports(self)
+        self.pantalla_properati = Pantalla_Properati(self)
+        self.pantalla_metro_cuadrado = Pantalla_Metro_Cuadrado(self)
+        self.pantalla_finca_raiz = Pantalla_Finca_Raiz(self)
 
         self.show_frame(self.pantalla_principal)
 
@@ -317,7 +320,7 @@ class Pantalla_Creadores(BaseScreen):
         self.title_label.place(relx=0.5, y=40, anchor="center")
 
         self.creators_frame = customtkinter.CTkFrame(
-            self, fg_color=COLOR_FRAME, height=300, width=400
+            self, fg_color=COLOR_BG, height=300, width=400
         )
         self.creators_frame.place(relx=0.5, rely=0.3, anchor="center")
 
@@ -654,6 +657,224 @@ class Dynamic_Scraper(BaseScreen):
         )
         self.question_button.pack(pady=10, padx=10)
 
+        self.buttom_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=200, width=700)
+        self.buttom_frame.place(relx=0.5, y=220, anchor="center")
+
+        self.metro_button = customtkinter.CTkButton(
+            self.buttom_frame, text="METRO \n CUADRADO",
+            font=("Tw Cen MT Condensed Extra Bold", 40, "bold"),
+            width=220, height=180, fg_color=COLOR_BUTTON,
+            hover_color=COLOR_HOVER, border_width=5, border_color=COLOR_BORDER,
+            command=lambda: parent.show_frame(parent.pantalla_metro_cuadrado)
+        )
+        self.metro_button.place(relx=0.17, rely=0.5, anchor="center")
+
+        self.finca_button = customtkinter.CTkButton(
+            self.buttom_frame, text="FINCA RAIZ",
+            font=("Tw Cen MT Condensed Extra Bold", 40, "bold"),
+            width=220, height=180, fg_color=COLOR_BUTTON,
+            hover_color=COLOR_HOVER, border_width=5, border_color=COLOR_BORDER,
+            command=lambda: parent.show_frame(parent.pantalla_finca_raiz)
+        )
+        self.finca_button.place(relx=0.5, rely=0.5, anchor="center")
+
+        self.proper_button = customtkinter.CTkButton(
+            self.buttom_frame, text="PROPERATI",
+            font=("Tw Cen MT Condensed Extra Bold", 40, "bold"),
+            width=220, height=180, fg_color=COLOR_BUTTON,
+            border_width=5, border_color=COLOR_BORDER,
+            hover_color=COLOR_HOVER,
+            command=lambda: parent.show_frame(parent.pantalla_properati)
+        )
+        self.proper_button.place(relx=0.83, rely=0.5, anchor="center")
+
+
+class Pantalla_Properati(BaseScreen):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.return_button_dynamic = customtkinter.CTkButton(
+            self, text="", image=returnicon, fg_color=COLOR_BG,
+            hover_color=COLOR_HOVER,
+            width=60, height=60,
+            command=lambda: parent.show_frame(parent.dynamic_scraper)
+        )
+        self.return_button_dynamic.place(x=50, y=50, anchor="center")
+
+        self.info_label = customtkinter.CTkLabel(
+            self, text="PROPERATI",
+            font=("Segoe UI Black", 40, "bold"),
+            text_color=COLOR_TITLE
+        )
+        self.info_label.place(relx=0.5, y=60, anchor="center")
+
+        self.url_frame = customtkinter.CTkFrame(
+            self, fg_color=COLOR_BG,
+            height=50, width=990
+        )
+        self.url_frame.place(relx=0.5, y=155, anchor="center")
+        
+        self.url_entry = customtkinter.CTkEntry(
+            self.url_frame,
+            placeholder_text="URL",
+            width=900,
+            height=30,
+            fg_color=COLOR_FRAME,
+            border_color=COLOR_BORDER,
+            text_color=COLOR_TEXT
+        )
+        self.url_entry.place(x=460, y=25, anchor="center")
+        
+        self.search_button = customtkinter.CTkButton(
+            self.url_frame, text="search",
+            width=60, height=30,
+            fg_color=COLOR_BUTTON,
+            hover_color=COLOR_HOVER,
+            border_color=COLOR_BORDER,
+            text_color=COLOR_TEXT,
+            
+        )
+        self.search_button.place(x=950, y=25, anchor="center")
+
+
+        self.city_frame = customtkinter.CTkFrame(
+            self, fg_color="white",
+            height=150, width=485
+        )
+        self.city_frame.place(relx=0.49, y=275, anchor="e")
+
+        self.list_frame = customtkinter.CTkFrame(
+            self, fg_color="white",
+            height=50, width=485
+        )
+        self.list_frame.place(relx=0.51, y=225, anchor="w")
+
+        self.city_label = customtkinter.CTkLabel(self.city_frame,text="hola", text_color= "black")
+        self.city_label.place(x = 20, rely = 0.5, anchor=("w"))
+        
+class Pantalla_Metro_Cuadrado(BaseScreen):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.return_button_dynamic = customtkinter.CTkButton(
+            self, text="", image=returnicon, fg_color=COLOR_BG,
+            hover_color=COLOR_HOVER,
+            width=60, height=60,
+            command=lambda: parent.show_frame(parent.dynamic_scraper)
+        )
+        self.return_button_dynamic.place(x=50, y=50, anchor="center")
+
+        self.info_label = customtkinter.CTkLabel(
+            self, text="METRO CUADRADO",
+            font=("Segoe UI Black", 40, "bold"),
+            text_color=COLOR_TITLE
+        )
+        self.info_label.place(relx=0.5, y=60, anchor="center")
+
+        self.url_frame = customtkinter.CTkFrame(
+            self, fg_color=COLOR_BG,
+            height=50, width=990
+        )
+        self.url_frame.place(relx=0.5, y=155, anchor="center")
+        
+        self.url_entry = customtkinter.CTkEntry(
+            self.url_frame,
+            placeholder_text="URL",
+            width=900,
+            height=30,
+            fg_color=COLOR_FRAME,
+            border_color=COLOR_BORDER,
+            text_color=COLOR_TEXT
+        )
+        self.url_entry.place(x=460, y=25, anchor="center")
+        
+        self.search_button = customtkinter.CTkButton(
+            self.url_frame, text="search",
+            width=60, height=30,
+            fg_color=COLOR_BUTTON,
+            hover_color=COLOR_HOVER,
+            border_color=COLOR_BORDER,
+            text_color=COLOR_TEXT,
+            
+        )
+        self.search_button.place(x=950, y=25, anchor="center")
+
+        self.city_frame = customtkinter.CTkFrame(
+            self, fg_color="white",
+            height=150, width=485
+        )
+        self.city_frame.place(relx=0.49, y=275, anchor="e")
+
+        self.list_frame = customtkinter.CTkFrame(
+            self, fg_color="white",
+            height=50, width=485
+        )
+        self.list_frame.place(relx=0.51, y=225, anchor="w")
+
+        self.city_label = customtkinter.CTkLabel(self.city_frame,text="hola", text_color= "black")
+        self.city_label.place(x = 20, rely = 0.5, anchor=("w"))
+
+class Pantalla_Finca_Raiz(BaseScreen):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.return_button_dynamic = customtkinter.CTkButton(
+            self, text="", image=returnicon, fg_color=COLOR_BG,
+            hover_color=COLOR_HOVER,
+            width=60, height=60,
+            command=lambda: parent.show_frame(parent.dynamic_scraper)
+        )
+        self.return_button_dynamic.place(x=50, y=50, anchor="center")
+
+        self.info_label = customtkinter.CTkLabel(
+            self, text="FINCA RAIZ",
+            font=("Segoe UI Black", 40, "bold"),
+            text_color=COLOR_TITLE
+        )
+        self.info_label.place(relx=0.5, y=60, anchor="center")
+
+        self.url_frame = customtkinter.CTkFrame(
+            self, fg_color=COLOR_BG,
+            height=50, width=990
+        )
+        self.url_frame.place(relx=0.5, y=155, anchor="center")
+        
+        self.url_entry = customtkinter.CTkEntry(
+            self.url_frame,
+            placeholder_text="URL",
+            width=900,
+            height=30,
+            fg_color=COLOR_FRAME,
+            border_color=COLOR_BORDER,
+            text_color=COLOR_TEXT
+        )
+        self.url_entry.place(x=460, y=25, anchor="center")
+        
+        self.search_button = customtkinter.CTkButton(
+            self.url_frame, text="search",
+            width=60, height=30,
+            fg_color=COLOR_BUTTON,
+            hover_color=COLOR_HOVER,
+            border_color=COLOR_BORDER,
+            text_color=COLOR_TEXT,
+            
+        )
+        self.search_button.place(x=950, y=25, anchor="center")
+
+        self.city_frame = customtkinter.CTkFrame(
+            self, fg_color="white",
+            height=150, width=485
+        )
+        self.city_frame.place(relx=0.49, y=275, anchor="e")
+
+        self.list_frame = customtkinter.CTkFrame(
+            self, fg_color="white",
+            height=50, width=485
+        )
+        self.list_frame.place(relx=0.51, y=225, anchor="w")
+
+        self.city_label = customtkinter.CTkLabel(self.city_frame,text="hola", text_color= "black")
+        self.city_label.place(x = 20, rely = 0.5, anchor=("w"))
 
 class Reports(BaseScreen):
     def __init__(self, parent):
@@ -665,13 +886,46 @@ class Reports(BaseScreen):
             command=lambda: parent.show_frame(parent.pantalla_principal)
         )
         self.house_button.place(x=50, y=50, anchor="center")
-
         self.title_label = customtkinter.CTkLabel(
             self, text="REPORTS",
             font=("Segoe UI Black", 40, "bold"),
             text_color=COLOR_TITLE
         )
         self.title_label.place(relx=0.5, y=40, anchor="center")
+        self.files_frame = customtkinter.CTkScrollableFrame(
+            self, fg_color="light gray", width=800, height=400
+        )
+        self.files_frame.place(relx=0.5, y=280, anchor="center")
+
+    def refresh_files(self):
+        config = load_config()
+        reports_dir = config.get("reports_directory", os.path.join(os.path.expanduser("~"), "Downloads", "reports"))
+        for widget in self.files_frame.winfo_children():
+            widget.destroy()
+        allowed_exts = ('.pdf', '.xlsx', '.xls')
+        for filename in os.listdir(reports_dir):
+            if filename.lower().endswith(allowed_exts):
+                filepath = os.path.join(reports_dir, filename)
+                btn = customtkinter.CTkButton(
+                    self.files_frame,
+                    text=f"{os.path.splitext(filename)[0]}\nFile Type : {os.path.splitext(filename)[1].upper()}",
+                    width=120,
+                    height=80,
+                    corner_radius=15,
+                    fg_color=COLOR_BUTTON,
+                    text_color="white",
+                    font=("Segoe UI Black", 16, "bold"),
+                    border_width=3,
+                    border_color=COLOR_BORDER,
+                    hover_color=COLOR_HOVER,
+                    command=lambda path=filepath: os.startfile(path)
+                )
+                btn.pack(pady=5)
+
+    def tkraise(self, aboveThis=None):
+        self.refresh_files()
+        super().tkraise(aboveThis)
+
 
 if __name__ == "__main__":
     app = APPGUIRED()
