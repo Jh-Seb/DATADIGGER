@@ -21,8 +21,7 @@ def convert_csv_to_excel(csv_path, excel_path):
     
     except Exception as e:
         print(f"Error al convertir el archivo: {e}")
-
-if __name__ == "__main__":
+def generar():
     print('Seleccione una página:')
     try:
         numero = int(input(""" 1. Properati
@@ -46,3 +45,6 @@ if __name__ == "__main__":
 
     except ValueError:
         print("Error: Debe ingresar un número válido (1 o 2).")
+
+if __name__ == '__main__':
+    generar()
