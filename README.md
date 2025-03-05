@@ -49,22 +49,40 @@ Este módulo se enfoca en páginas de bienes raíces y permite:
 ## Estructura de la Aplicación
 
 ```
-scraper_app/
+DATADIGGER/
 │
-├── main.py             
+├── main.py       
+├── shared_state.py  
+├── config_manager.py      
 ├── scraper/
-│   ├── __init__.py
-│   ├── scraper.py       
-│   ├── wiki_scraper.py  
-│   └── real_estate_scraper.py 
+│   ├── __init__.py       
+│   ├── static_scraper.py  
+│   └── dynamic_scrapper/
+│       ├── scrapy.cfg
+│       └── dynamic_scrapper/
+│           ├── __init__.py 
+│           ├── items.py       
+│           ├── middlewares.py 
+│           ├── pipelines.py
+│           ├── settings.py  
+│           └── spiders/
+│               ├── __init__.py 
+│               ├── fincaraiz.py 
+│               ├── metrocuadrado.py 
+│               └── properati/
 │
 ├── gui/
 │   ├── __init__.py
-│   └── app_gui.py       
+│   ├── app_gui_start.py
+│   ├── DKDE.py
+│   ├── gui_blue_theme.py
+│   ├── gui_green_theme.py
+│   └── gui_red_theme.py       
 │
 ├── reports/
 │   ├── __init__.py
-│   └── report_generator.py  
+│   ├── dynamic_report.py
+│   └── static_report.py  
 │
 └── assets/              
 ```
