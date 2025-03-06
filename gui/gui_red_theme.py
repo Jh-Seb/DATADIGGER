@@ -8,7 +8,9 @@ import tkinter.messagebox as mbox
 import scraper.dynamic_scrapper.dynamic_scrapper.spiders.fincaraiz as FincaRaiz
 import scraper.dynamic_scrapper.dynamic_scrapper.spiders.properati as Properati
 import scraper.dynamic_scrapper.dynamic_scrapper.spiders.metrocuadrado as MetroCuadrado
+import csv
 from tkinter import filedialog
+from reports.generator_dynamic import generar
 from config_manager import load_config, update_config
 from PIL import Image, ImageTk, ImageSequence
 from scraper.static_scraper import WIKISCRAPER
@@ -650,8 +652,6 @@ class Static_Scraper(BaseScreen):
 class Dynamic_Scraper(BaseScreen):
     def __init__(self, parent):
         super().__init__(parent)
-        
-        # Widgets principales
         self.house_button = customtkinter.CTkButton(
             self, text="", image=homeicon, fg_color=COLOR_BG,
             hover_color=COLOR_HOVER,
@@ -667,18 +667,11 @@ class Dynamic_Scraper(BaseScreen):
         )
         self.title_label.place(relx=0.5, y=40, anchor="center")
 
-        # Crea el frame para los botones de las paginas: "Metro Cuadrado", "FincaRaiz", "Properati"
+        self.config_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=190, width=100)
+        self.config_frame.place(relx=0.98, y=20, anchor="ne")
+
         self.buttom_frame = customtkinter.CTkFrame(self, fg_color=COLOR_BG, height=200, width=700)
         self.buttom_frame.place(relx=0.5, y=220, anchor="center")
-
-        self.metro_button = customtkinter.CTkButton(
-            self.buttom_frame, text="METRO \n CUADRADO",
-            font=("Tw Cen MT Condensed Extra Bold", 40, "bold"),
-            width=220, height=180, fg_color=COLOR_BUTTON,
-            hover_color=COLOR_HOVER, border_width=5, border_color=COLOR_BORDER,
-            command=lambda: parent.show_frame(parent.pantalla_metro_cuadrado)
-        )
-        self.metro_button.place(relx=0.17, rely=0.5, anchor="center")
 
         self.finca_button = customtkinter.CTkButton(
             self.buttom_frame, text="FINCA RAIZ",
@@ -687,7 +680,7 @@ class Dynamic_Scraper(BaseScreen):
             hover_color=COLOR_HOVER, border_width=5, border_color=COLOR_BORDER,
             command=lambda: parent.show_frame(parent.pantalla_finca_raiz)
         )
-        self.finca_button.place(relx=0.5, rely=0.5, anchor="center")
+        self.finca_button.place(relx=0.6, rely=0.5, anchor="center")
 
         self.proper_button = customtkinter.CTkButton(
             self.buttom_frame, text="PROPERATI",
@@ -697,19 +690,15 @@ class Dynamic_Scraper(BaseScreen):
             hover_color=COLOR_HOVER,
             command=lambda: parent.show_frame(parent.pantalla_properati)
         )
-        self.proper_button.place(relx=0.83, rely=0.5, anchor="center")
+        self.proper_button.place(relx=0.6, rely=0.5, anchor="center")
 
-# Pantalla del Properati Scraper
+
 class Pantalla_Properati(BaseScreen):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.city_list = [
-            "Bogota","Cucuta","Medellin","Barranquilla","Cali",
-            "Bucaramanga","Yopal","Cartagena","Santa Marta",
-            "Villavicencio","Tunja","Leticia","Manizales","Ibague"
-        ]
-        # Widgets principales
+        
+
         self.return_button_dynamic = customtkinter.CTkButton(
             self, text="", image=returnicon, fg_color=COLOR_BG,
             hover_color=COLOR_HOVER,
@@ -774,18 +763,22 @@ class Pantalla_Properati(BaseScreen):
 
         self.list_box_2 = customtkinter.CTkComboBox(self.list_frame, values=Properati.operationTypes, width=137, height=30)
         self.list_box_2.place(x=10, rely=0.5, anchor="w")
-
+        self.city_list = {}
+        with open('data_cities_properati.csv', 'r', encoding="utf8") as cities_properati:
+            for line in csv.reader(cities_properati):
+                self.city_list.update({line[-1]: line[0]})
+            
     def update_city_suggestions(self, event):
         typed = self.url_entry.get().strip()
         for widget in self.city_scroll_frame.winfo_children():
             widget.destroy()
 
         if typed:
-            for city in self.city_list:
-                if typed.lower() in city.lower():
+            for name,value in self.city_list:
+                if typed.lower() in name.lower():
                     label = customtkinter.CTkLabel(
                         self.city_scroll_frame,
-                        text=city,
+                        text=name,
                         text_color=COLOR_TITLE,
                         fg_color=COLOR_BUTTON,
                         corner_radius=50,
@@ -793,28 +786,20 @@ class Pantalla_Properati(BaseScreen):
                         justify="left"
                     )
                     label.pack(side="top", fill="x", padx=10, pady=2)
-                    label.bind("<Button-1>", lambda e, c=city: self.select_city(c))
+                    label.bind("<Button-1>", lambda e, c=value: self.select_city(c))
 
-    def select_city(self, city):
+    def select_city(self, value):
         self.url_entry.delete(0, "end")
-        self.url_entry.insert(0, city)
+        self.url_entry.insert(0, value)
         for widget in self.city_scroll_frame.winfo_children():
             widget.destroy()
-
-
-    def select_city(self, city):
-        self.url_entry.delete(0, "end")
-        self.url_entry.insert(0, city)
-        for widget in self.city_frame.winfo_children():
-            widget.destroy()
-
 
     def export_filters(self):
         filters.operation_type = self.list_box_2.get()
         filters.property_type = self.list_box_1.get()
         filters.city = self.url_entry.get()
+        Properati.properati_scraper()
 
-        
 class Pantalla_Metro_Cuadrado(BaseScreen):
     def __init__(self, parent):
         super().__init__(parent)
@@ -870,7 +855,7 @@ class Pantalla_Metro_Cuadrado(BaseScreen):
             command = self.export_filters
         )
         self.generate_button.place(x=950, y=25, anchor="center")
-        
+
         self.city_scroll_frame = customtkinter.CTkScrollableFrame(
             self, fg_color=COLOR_BG,
             width=485, height=150
@@ -889,17 +874,22 @@ class Pantalla_Metro_Cuadrado(BaseScreen):
         self.list_box_2 = customtkinter.CTkComboBox(self.list_frame, values=MetroCuadrado.operationTypes, width=137, height=30)
         self.list_box_2.place(x=10, rely=0.5, anchor="w")
 
+        self.city_list = {}
+        with open('data_cities_properati.csv', 'r', encoding="utf8") as cities_properati:
+            for line in csv.reader(cities_properati):
+                self.city_list.update({line[-1]: line[0]})
+            
     def update_city_suggestions(self, event):
         typed = self.url_entry.get().strip()
         for widget in self.city_scroll_frame.winfo_children():
             widget.destroy()
 
         if typed:
-            for city in self.city_list:
-                if typed.lower() in city.lower():
+            for name,value in self.city_list:
+                if typed.lower() in name.lower():
                     label = customtkinter.CTkLabel(
                         self.city_scroll_frame,
-                        text=city,
+                        text=name,
                         text_color=COLOR_TITLE,
                         fg_color=COLOR_BUTTON,
                         corner_radius=50,
@@ -907,35 +897,25 @@ class Pantalla_Metro_Cuadrado(BaseScreen):
                         justify="left"
                     )
                     label.pack(side="top", fill="x", padx=10, pady=2)
-                    label.bind("<Button-1>", lambda e, c=city: self.select_city(c))
+                    label.bind("<Button-1>", lambda e, c=value: self.select_city(c))
 
-    def select_city(self, city):
+    def select_city(self, value):
         self.url_entry.delete(0, "end")
-        self.url_entry.insert(0, city)
+        self.url_entry.insert(0, value)
         for widget in self.city_scroll_frame.winfo_children():
-            widget.destroy()
-
-
-    def select_city(self, city):
-        self.url_entry.delete(0, "end")
-        self.url_entry.insert(0, city)
-        for widget in self.city_frame.winfo_children():
             widget.destroy()
 
     def export_filters(self):
         filters.operation_type = self.list_box_2.get()
         filters.property_type = self.list_box_1.get()
         filters.city = self.url_entry.get()
+        
+        
+        
 
 class Pantalla_Finca_Raiz(BaseScreen):
     def __init__(self, parent):
         super().__init__(parent)
-
-        self.city_list = [
-            "Bogota","Cucuta","Medellin","Barranquilla","Cali",
-            "Bucaramanga","Yopal","Cartagena","Santa Marta",
-            "Villavicencio","Tunja","Leticia","Manizales","Ibague"
-        ]
 
         self.return_button_dynamic = customtkinter.CTkButton(
             self, text="", image=returnicon, fg_color=COLOR_BG,
@@ -952,12 +932,6 @@ class Pantalla_Finca_Raiz(BaseScreen):
         )
         self.info_label.place(relx=0.5, y=60, anchor="center")
 
-        self.url_frame = customtkinter.CTkFrame(
-            self, fg_color=COLOR_BG,
-            height=50, width=990
-        )
-        self.url_frame.place(relx=0.5, y=155, anchor="center")
-        
         # Crea el buscador junto al boton para generar el archivo scrapeado
         self.url_frame = customtkinter.CTkFrame(
             self, fg_color=COLOR_BG,
@@ -1008,17 +982,22 @@ class Pantalla_Finca_Raiz(BaseScreen):
         self.list_box_2 = customtkinter.CTkComboBox(self.list_frame, values=FincaRaiz.operationTypes, width=137, height=30)
         self.list_box_2.place(x=10, rely=0.5, anchor="w")
 
+        self.city_list = {}
+        with open('data_cities_properati.csv', 'r', encoding="utf8") as cities_properati:
+            for line in csv.reader(cities_properati):
+                self.city_list.update({line[-1]: line[0]})
+            
     def update_city_suggestions(self, event):
         typed = self.url_entry.get().strip()
         for widget in self.city_scroll_frame.winfo_children():
             widget.destroy()
 
         if typed:
-            for city in self.city_list:
-                if typed.lower() in city.lower():
+            for name,value in self.city_list:
+                if typed.lower() in name.lower():
                     label = customtkinter.CTkLabel(
                         self.city_scroll_frame,
-                        text=city,
+                        text=name,
                         text_color=COLOR_TITLE,
                         fg_color=COLOR_BUTTON,
                         corner_radius=50,
@@ -1026,26 +1005,19 @@ class Pantalla_Finca_Raiz(BaseScreen):
                         justify="left"
                     )
                     label.pack(side="top", fill="x", padx=10, pady=2)
-                    label.bind("<Button-1>", lambda e, c=city: self.select_city(c))
+                    label.bind("<Button-1>", lambda e, c=value: self.select_city(c))
 
-    def select_city(self, city):
+    def select_city(self, value):
         self.url_entry.delete(0, "end")
-        self.url_entry.insert(0, city)
+        self.url_entry.insert(0, value)
         for widget in self.city_scroll_frame.winfo_children():
-            widget.destroy()
-
-
-    def select_city(self, city):
-        self.url_entry.delete(0, "end")
-        self.url_entry.insert(0, city)
-        for widget in self.city_frame.winfo_children():
             widget.destroy()
 
     def export_filters(self):
         filters.operation_type = self.list_box_2.get()
         filters.property_type = self.list_box_1.get()
         filters.city = self.url_entry.get()
-
+        FincaRaiz.finca_raiz_scraper()
 
 
 class Reports(BaseScreen):

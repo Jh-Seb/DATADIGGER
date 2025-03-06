@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+from config_manager import load_config
 
 def convert_csv_to_excel(csv_path, excel_path):
     """
@@ -27,18 +28,14 @@ def generar():
         numero = int(input(""" 1. Properati
  2. Fincaraiz
 """))
-
-        downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
+        config = load_config()
+        directory = config.get("reports_directory", "C:\\Users\\JHON\\Downloads\\reports").lower()
+        downloads_folder = os.path.join(directory)
         
-        if numero == 1:
-            input_csv = os.path.join(os.getcwd(), "data_properati.csv")  # Buscar en la carpeta del script
-            output_excel = os.path.join(downloads_folder, "data_properati.xlsx")
-        elif numero == 2:
-            input_csv = os.path.join(os.getcwd(), "data_fincaraiz.csv")
-            output_excel = os.path.join(downloads_folder, "data_fincaraiz.xlsx")
-        else:
-            print("Opción inválida. Debe ser 1 o 2.")
-            exit()
+        
+        input_csv = os.path.join(os.getcwd(), "data_properati.csv")  # Buscar en la carpeta del script
+        output_excel = os.path.join(downloads_folder, "data_properati.xlsx")
+        
 
         # Convierte CSV a Excel
         convert_csv_to_excel(input_csv, output_excel)

@@ -1,5 +1,7 @@
 # Libraries
 import scrapy
+import filters
+from reports.generator_dynamic import generar
 from scrapy.crawler import CrawlerProcess
 
 # Spider
@@ -66,31 +68,33 @@ propertyTypes = {"casas":"casas",
                 "parqueaderos":"parqueaderos",
                 "edificios":"edificios"
                 }
-geoId = {
-    "bogota": "bogota"}
+
 
 Types= list(propertyTypes.keys()) 
 
-# Choose
-# input(operation)
-# input(property)
-# input(location)
-operation = "arriendo"
-property = ["apartamentos","casas","fincas"]
-location = "bogota"
 
-# Parameters
-# Type of operation
-#operation = operationTypes[0]
+def finca_raiz_scraper():
+    propertyTypes = {"casas":"casas",
+                "apartamentos":"apartamentos", 
+                "apartaestudios": "apartaestudios", 
+                "cabañas":"cabanas",
+                "casas campestres":"casas-campestres",
+                "casas lotes":"casas-lotes",
+                "fincas":"fincas", 
+                "habitaciones":"habitaciones",
+                "lotes":"lotes",
+                "bodegas":"bodegas",    
+                "consultorios":"consultorios",         
+                "locales":"locales",
+                "oficinas":"oficinas",
+                "parqueaderos":"parqueaderos",
+                "edificios":"edificios"
+                }
+    operation = filters.operation_type
+    property = propertyTypes.get(filters.property_type)
+    location = filters.city
 
-# Type of the property
-for i in range(1, len(property)):
-    property[i] = propertyTypes.get(property[i])
-
-# Location
-location = str(geoId.get(location))
-
-# Scrape
-#process = CrawlerProcess()
-#process.crawl(FincaraizScrapper, operation, property, location)
-#process.start()
+    process = CrawlerProcess()
+    process.crawl(FincaraizScrapper, operation, property, location)
+    process.start()
+    generar()

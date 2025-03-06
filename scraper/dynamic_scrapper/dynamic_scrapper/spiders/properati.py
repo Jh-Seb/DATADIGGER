@@ -1,5 +1,7 @@
 # Libraries
 import scrapy
+import filters
+from reports.generator_dynamic import generar
 from scrapy.crawler import CrawlerProcess
 
 # Spider
@@ -44,10 +46,10 @@ class ProperatiScrapper(scrapy.Spider):
                 'destacado': publicacion.css('span.label__highlight::text').get(),
             }
         
-        # Scraping all the posible pages
+         #Scraping all the posible pages
         #next_page = response.css('a.pagination__link::attr(href)')[-1].get()
         #if next_page is not None:
-            #yield response.follow(next_page, callback=self.parse)
+         #   yield response.follow(next_page, callback=self.parse)
 
 # Main -------------------------------------------------------------------------------------
 # Filters
@@ -61,30 +63,27 @@ propertyTypes = {"apartaestudios":"studio",
                 "oficinas / Consultorios":"office",
                 "parqueaderos":"car_park"
                 }
-geoId = {
-    "bogota":3688685
-    }
 Types = list(propertyTypes.keys())
-# Choose
-# input(operation)
-# input(property)
-# input(location)
-operation = "arriendo"
-property = ["apartamentos","casas","fincas"]
-location = "bogota"
 
-# Parameters
-# Type of operation
-#operation = operationTypes[0]
 
-# Type of the property
-for i in range(1, len(property)):
-    property[i] = propertyTypes.get(property[i])
 
-# Location
-location = str(geoId.get(location))
 
-# Scrape
-#process = CrawlerProcess()
-#process.crawl(ProperatiScrapper, operation, property, location)
-#process.start()
+
+def properati_scraper():
+    propertyTypes = {"apartaestudios":"studio", 
+                "apartamentos":"apartment", 
+                "casas":"house", 
+                "fincas":"villa", 
+                "campos":"land", 
+                "locales comerciales":"commercial",
+                "oficinas / Consultorios":"office",
+                "parqueaderos":"car_park"
+                }
+    operation = filters.operation_type
+    property = propertyTypes.get(filters.property_type)
+    location = filters.city
+
+    process = CrawlerProcess()
+    process.crawl(ProperatiScrapper, operation, property, location)
+    process.start()
+    generar()
